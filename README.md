@@ -1,1 +1,1 @@
-# PotBlog
+![ReadMe Banner](https://raw.githubusercontent.com/MathisVerstrepen/github-visual-assets/refs/heads/main/banner/PotBlog.png)
