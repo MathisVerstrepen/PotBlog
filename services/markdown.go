@@ -7,6 +7,9 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"potblog/components"
+	"potblog/handlers"
 )
 
 var (
@@ -49,8 +52,13 @@ func MarkdownToHTML(md *string) (MarkdownHTML, error) {
 		return MarkdownHTML{}, err
 	}
 
+	html, err := markdownToRawHTML(md)
+	if err != nil {
+		return MarkdownHTML{}, err
+	}
+
 	return MarkdownHTML{
-		RawHTML:  *md,
+		RawHTML:  html,
 		Metadata: metadata,
 	}, nil
 }
@@ -132,4 +140,90 @@ func parseTags(value string) []string {
 		tags = append(tags, strings.TrimSpace(tag))
 	}
 	return tags
+}
+
+func markdownToRawHTML(md *string) (string, error) {
+	rows := strings.Split(*md, "\n")
+
+	var html string
+
+	idx := 0
+	for idx < len(rows) {
+		row := rows[idx]
+		row_type := rowType(row)
+
+		switch row_type {
+		case "title_h1":
+			html += handlers.OfflineRender(components.TitleH1(row[2:]))
+		case "title_h2":
+			html += handlers.OfflineRender(components.TitleH2(row[3:]))
+		case "paragraph":
+			html += handlers.OfflineRender(components.Paragraph(row))
+		case "quote":
+			html += handlers.OfflineRender(components.Blockquote(row[2:]))
+		case "code":
+			language := strings.Trim(row, "`")
+			fmt.Println(language)
+
+			codeBlockMd := ""
+			for _, codeRow := range rows[idx+1:] {
+				idx++
+				if strings.HasPrefix(codeRow, "```") {
+					break
+				}
+				codeBlockMd += codeRow + "\n"
+			}
+
+			html += handlers.OfflineRender(components.CodeBlock(language, codeBlockMd))
+		case "button":
+			url, icon, text := extractButtonTags(row)
+
+			fmt.Printf("url: %s, icon: %s, text: %s\n", url, icon, text)
+
+			html += handlers.OfflineRender(components.Button(url, icon, text))
+		}
+
+		idx++
+	}
+
+	return html, nil
+}
+
+func rowType(row string) string {
+	if strings.HasPrefix(row, "# ") {
+		return "title_h1"
+	}
+	if strings.HasPrefix(row, "## ") {
+		return "title_h2"
+	}
+	if strings.HasPrefix(row, "> ") {
+		return "quote"
+	}
+	if strings.HasPrefix(row, "```") {
+		return "code"
+	}
+	if strings.HasPrefix(row, "[button") {
+		return "button"
+	}
+	return "paragraph"
+}
+
+func extractButtonTags(row string) (string, string, string) {
+	innerData := row[7 : len(row)-1]
+
+	tags := strings.Split(innerData, " ")
+	var tagMap = make(map[string]string)
+	for _, tag := range tags {
+		tagData := strings.Split(tag, "=")
+		if len(tagData) < 2 {
+			continue
+		}
+		tagMap[tagData[0]] = strings.Trim(strings.Trim(tagData[1], "'"), "\"")
+	}
+
+	url := tagMap["url"]
+	icon := tagMap["icon"]
+	text := tagMap["text"]
+
+	return url, icon, text
 }

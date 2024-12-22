@@ -1,0 +1,51 @@
+package components
+
+templ Svg() {
+<svg aria-hidden="true" id="svgdefs" version="2" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+    </defs>
+</svg>
+}
+
+css svg_stroke_color(color string, size string, padding string) {
+    color: { templ.SafeCSSProperty(color) };
+    width: { size };
+    height: { size };
+    padding: { padding };
+}
+
+func getSize(sizeLabel string) string {
+    switch sizeLabel {
+    case "small":
+        return "1.15rem"
+    case "medium":
+        return "1.75rem"
+    case "large":
+        return "2.25rem"
+    case "auto":
+        return "auto"
+    default:
+        return "1.75rem"
+    }
+}
+
+func GetPadding(sizeLabel string) string {
+    switch sizeLabel {
+    case "small":
+        return "0.125rem"
+    case "medium":
+        return "0.25rem"
+    case "large":
+        return "0.33rem"
+    case "auto":
+        return "auto"
+    default:
+        return "0.25rem"
+    }
+}
+
+templ UseIcon(iconName string, color string, size string) {
+    <svg class={ svg_stroke_color(color, getSize(size), GetPadding(size)) } viewBox="0 0 24 24">
+        <use href={"#" + iconName}></use>
+    </svg>
+}

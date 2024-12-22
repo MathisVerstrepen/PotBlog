@@ -1,0 +1,36 @@
+package components
+
+templ TitleH1(title string) {
+    <h1>{title}</h1>
+}
+
+templ TitleH2(title string) {
+    <h2>{title}</h2>
+}
+
+templ Paragraph(content string) {
+    <p>{content}</p>
+}
+
+templ CodeBlock(language, code string) {
+    <div>
+        <p>{language}</p>
+        <pre>
+            <code>@templ.Raw(code)</code>
+        </pre>
+    </div>
+}
+
+templ Blockquote(content string) {
+    <blockquote>{content}</blockquote>
+}
+
+templ Button(url, icon, text string) {
+    <a href={ templ.SafeURL(url) } 
+        role="button">
+        if (icon != "") {
+            @UseIcon(icon, "black", "medium")
+        }
+        {text}
+    </a>
+}

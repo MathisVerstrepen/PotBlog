@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"path/filepath"
@@ -36,4 +37,15 @@ func Render(ctx echo.Context, statusCode int, t templ.Component) error {
 	}
 
 	return ctx.HTML(statusCode, buf.String())
+}
+
+func OfflineRender(t templ.Component) string {
+	buf := templ.GetBuffer()
+	defer templ.ReleaseBuffer(buf)
+
+	if err := t.Render(context.Background(), buf); err != nil {
+		return ""
+	}
+
+	return buf.String()
 }
