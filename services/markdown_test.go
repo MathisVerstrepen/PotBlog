@@ -1,12 +1,33 @@
 package services
 
 import (
+	"io"
+	"os"
+	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 )
 
-func PointerTo[T ~string](s T) *T {
+func pointerTo[T ~string](s T) *T {
 	return &s
+}
+
+func getTestFileData(filename string) string {
+	filepath := filepath.Join(Root, "tests/data", filename)
+	file, err := os.Open(filepath)
+	if err != nil {
+		return ""
+	}
+
+	defer file.Close()
+
+	data, err := io.ReadAll(file)
+	if err != nil {
+		return ""
+	}
+
+	return string(data)
 }
 
 func Test_ReadMarkdownFile(t *testing.T) {
@@ -35,7 +56,108 @@ func Test_ReadMarkdownFile(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := ReadMarkdownFile(tt.args.filename); got != tt.want {
-				t.Errorf("ReadMarkdownFile() = %v, want %v", got, tt.want)
+				t.Errorf("ReadMarkdownFile() = %v\nWant %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMarkdownToHTML(t *testing.T) {
+	type args struct {
+		md *string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    MarkdownHTML
+		wantErr bool
+	}{
+		{
+			name: "givenMarkdown_WhenMarkdownToHTML_ThenReturnHTML",
+			args: args{
+				md: pointerTo(getTestFileData("TestMarkdownToHTML.md")),
+			},
+			want: MarkdownHTML{
+				RawHTML: getTestFileData("TestMarkdownToHTMLResult.html"),
+				Metadata: Metadata{
+					Title:       "This is an article !",
+					Description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc.",
+					Date:        "2024-08-13",
+					Tags:        []string{"lorem", "ipsum"},
+					Author:      "Mathis Verstrepen",
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := MarkdownToHTML(tt.args.md)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("MarkdownToHTML() error = %v \nWantErr %v", err, tt.wantErr)
+				return
+			}
+
+			gotNormalized := strings.ReplaceAll(got.RawHTML, "\n", "")
+			wantNormalized := strings.ReplaceAll(tt.want.RawHTML, "\n", "")
+
+			if !reflect.DeepEqual(gotNormalized, wantNormalized) {
+				t.Errorf("MarkdownToHTML() = %v \nWant %v", got.RawHTML, tt.want.RawHTML)
+			}
+			if !reflect.DeepEqual(got.Metadata, tt.want.Metadata) {
+				t.Errorf("MarkdownToHTML() = %v \nWant %v", got.Metadata, tt.want.Metadata)
+			}
+		})
+	}
+}
+
+func Test_markdownToMetadata(t *testing.T) {
+	type args struct {
+		md *string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    Metadata
+		wantErr bool
+	}{
+		{
+			name: "givenMarkdown_WhenMarkdownToMetadata_ThenReturnMetadata",
+			args: args{
+				md: pointerTo(`---
+title: This is an article !
+description: desc.
+date: 2024-08-13
+tags: lorem, ipsum
+author: Mathis Verstrepen
+---`),
+			},
+			want: Metadata{
+				Title:       "This is an article !",
+				Description: "desc.",
+				Date:        "2024-08-13",
+				Tags:        []string{"lorem", "ipsum"},
+				Author:      "Mathis Verstrepen",
+			},
+			wantErr: false,
+		}, {
+			name: "givenInvalidMarkdown_WhenMarkdownToMetadata_ThenReturnEmptyMetadata",
+			args: args{
+				md: pointerTo(`# This is an article !`),
+			},
+			want:    Metadata{},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := markdownToMetadata(tt.args.md)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("markdownToMetadata() error = %v\nWantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("markdownToMetadata() = %v\nWant %v", got, tt.want)
 			}
 		})
 	}
@@ -84,11 +206,11 @@ title: This is an article !
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := extractMetadataBlock(tt.args.content)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("extractMetadataBlock() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("extractMetadataBlock() error = %v\nWantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("extractMetadataBlock() = %v, want %v", got, tt.want)
+				t.Errorf("extractMetadataBlock() = %v\nWant %v", got, tt.want)
 			}
 		})
 	}
@@ -127,14 +249,14 @@ func Test_parseMetadataLine(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, got1, err := parseMetadataLine(tt.args.line)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("parseMetadataLine() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("parseMetadataLine() error = %v\nWantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("parseMetadataLine() got = %v, want %v", got, tt.want)
+				t.Errorf("parseMetadataLine() got = %v\nWant %v", got, tt.want)
 			}
 			if got1 != tt.want1 {
-				t.Errorf("parseMetadataLine() got1 = %v, want %v", got1, tt.want1)
+				t.Errorf("parseMetadataLine() got1 = %v\nWant %v", got1, tt.want1)
 			}
 		})
 	}
@@ -160,85 +282,7 @@ func Test_parseTags(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := parseTags(tt.args.value); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("parseTags() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func Test_markdownToMetadata(t *testing.T) {
-	type args struct {
-		md *string
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    Metadata
-		wantErr bool
-	}{
-		{
-			name: "givenMarkdown_WhenMarkdownToMetadata_ThenReturnMetadata",
-			args: args{
-				md: PointerTo(`---
-title: This is an article !
-description: desc.
-date: 2024-08-13
-tags: lorem, ipsum
-author: Mathis Verstrepen
----`),
-			},
-			want: Metadata{
-				Title:       "This is an article !",
-				Description: "desc.",
-				Date:        "2024-08-13",
-				Tags:        []string{"lorem", "ipsum"},
-				Author:      "Mathis Verstrepen",
-			},
-			wantErr: false,
-		}, {
-			name: "givenInvalidMarkdown_WhenMarkdownToMetadata_ThenReturnEmptyMetadata",
-			args: args{
-				md: PointerTo(`# This is an article !`),
-			},
-			want:    Metadata{},
-			wantErr: true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := markdownToMetadata(tt.args.md)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("markdownToMetadata() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("markdownToMetadata() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestMarkdownToHTML(t *testing.T) {
-	type args struct {
-		md *string
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    MarkdownHTML
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := MarkdownToHTML(tt.args.md)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("MarkdownToHTML() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("MarkdownToHTML() = %v, want %v", got, tt.want)
+				t.Errorf("parseTags() = %v\nWant %v", got, tt.want)
 			}
 		})
 	}
@@ -257,42 +301,42 @@ func Test_markdownToRawHTML(t *testing.T) {
 		{
 			name: "givenTitleH1Markdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
-				md: PointerTo("# This is an article !"),
+				md: pointerTo("# This is an article !"),
 			},
 			want:    "<h1>This is an article !</h1>",
 			wantErr: false,
 		}, {
 			name: "givenTitleH2Markdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
-				md: PointerTo("## This is an article !"),
+				md: pointerTo("## This is an article !"),
 			},
 			want:    "<h2>This is an article !</h2>",
 			wantErr: false,
 		}, {
 			name: "givenTitleParagraphMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
-				md: PointerTo("This is a paragraph."),
+				md: pointerTo("This is a paragraph."),
 			},
 			want:    "<p>This is a paragraph.</p>",
 			wantErr: false,
 		}, {
 			name: "givenTitleQuoteMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
-				md: PointerTo("> This is a quote."),
+				md: pointerTo("> This is a quote."),
 			},
 			want:    "<blockquote>This is a quote.</blockquote>",
 			wantErr: false,
 		}, {
 			name: "givenTitleCodeMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
-				md: PointerTo("```python\nprint('Hello, World!')\n```"),
+				md: pointerTo("```python\nprint('Hello, World!')\n```"),
 			},
 			want:    "<div><p>python</p><pre><code>print('Hello, World!')\n</code></pre></div>",
 			wantErr: false,
 		}, {
 			name: "givenTitleButtonMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
-				md: PointerTo("[button url='https://github.com/MathisVerstrepen' text='Github']"),
+				md: pointerTo("[button url='https://github.com/MathisVerstrepen' text='Github']"),
 			},
 			want:    `<a href="https://github.com/MathisVerstrepen" role="button">Github</a>`,
 			wantErr: false,
@@ -302,11 +346,48 @@ func Test_markdownToRawHTML(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := markdownToRawHTML(tt.args.md)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("markdownToRawHTML() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("markdownToRawHTML() error = %v\nWantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("markdownToRawHTML() = %v, want %v", got, tt.want)
+				t.Errorf("markdownToRawHTML() = %v\nWant %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_skipMetadataBlock(t *testing.T) {
+	type args struct {
+		content *string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "givenMarkdown_WhenSkipMetadataBlock_ThenReturnMarkdownWithoutMetadata",
+			args: args{
+				content: pointerTo(`---
+title: This is an article !
+description: desc.
+---
+
+# This is an article !`),
+			},
+			want: "# This is an article !",
+		}, {
+			name: "givenMarkdownWithoutMetadata_WhenSkipMetadataBlock_ThenReturnMarkdown",
+			args: args{
+				content: pointerTo("# This is an article !"),
+			},
+			want: "# This is an article !",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := skipMetadataBlock(tt.args.content); got != tt.want {
+				t.Errorf("skipMetadataBlock() = %v \nWant %v", got, tt.want)
 			}
 		})
 	}
@@ -357,12 +438,18 @@ func Test_rowType(t *testing.T) {
 				row: "[button url='https://github.com/MathisVerstrepen' icon='github' text='Github']",
 			},
 			want: "button",
+		}, {
+			name: "givenEmptyRow_WhenRowType_ThenReturnEmpty",
+			args: args{
+				row: "",
+			},
+			want: "empty",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := rowType(tt.args.row); got != tt.want {
-				t.Errorf("rowType() = %v, want %v", got, tt.want)
+				t.Errorf("rowType() = %v\nWant %v", got, tt.want)
 			}
 		})
 	}
@@ -401,13 +488,13 @@ func Test_extractButtonTags(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, got1, got2 := extractButtonTags(tt.args.row)
 			if got != tt.want {
-				t.Errorf("extractButtonTags() got = %v, want %v", got, tt.want)
+				t.Errorf("extractButtonTags() got = %v\nWant %v", got, tt.want)
 			}
 			if got1 != tt.want1 {
-				t.Errorf("extractButtonTags() got1 = %v, want %v", got1, tt.want1)
+				t.Errorf("extractButtonTags() got1 = %v\nWant %v", got1, tt.want1)
 			}
 			if got2 != tt.want2 {
-				t.Errorf("extractButtonTags() got2 = %v, want %v", got2, tt.want2)
+				t.Errorf("extractButtonTags() got2 = %v\nWant %v", got2, tt.want2)
 			}
 		})
 	}

@@ -1,20 +1,20 @@
 package components
 
 templ TitleH1(title string) {
-    <h1>{title}</h1>
+    <h1>@templ.Raw(title)</h1>
 }
 
 templ TitleH2(title string) {
-    <h2>{title}</h2>
+    <h2>@templ.Raw(title)</h2>
 }
 
 templ Paragraph(content string) {
-    <p>{content}</p>
+    <p>@templ.Raw(content)</p>
 }
 
 templ CodeBlock(language, code string) {
     <div>
-        <p>{language}</p>
+        <p>@templ.Raw(language)</p>
         <pre>
             <code>@templ.Raw(code)</code>
         </pre>
@@ -22,7 +22,7 @@ templ CodeBlock(language, code string) {
 }
 
 templ Blockquote(content string) {
-    <blockquote>{content}</blockquote>
+    <blockquote>@templ.Raw(content)</blockquote>
 }
 
 templ Button(url, icon, text string) {
@@ -31,6 +31,6 @@ templ Button(url, icon, text string) {
         if (icon != "") {
             @UseIcon(icon, "black", "medium")
         }
-        {text}
+        @templ.Raw(text)
     </a>
 }

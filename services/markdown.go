@@ -143,7 +143,7 @@ func parseTags(value string) []string {
 }
 
 func markdownToRawHTML(md *string) (string, error) {
-	rows := strings.Split(*md, "\n")
+	rows := strings.Split(skipMetadataBlock(md), "\n")
 
 	var html string
 
@@ -177,16 +177,24 @@ func markdownToRawHTML(md *string) (string, error) {
 			html += handlers.OfflineRender(components.CodeBlock(language, codeBlockMd))
 		case "button":
 			url, icon, text := extractButtonTags(row)
-
-			fmt.Printf("url: %s, icon: %s, text: %s\n", url, icon, text)
-
 			html += handlers.OfflineRender(components.Button(url, icon, text))
+		case "empty":
+			html += "\n\n"
 		}
 
 		idx++
 	}
 
 	return html, nil
+}
+
+func skipMetadataBlock(content *string) string {
+	indexSecondSeparator := strings.Index((*content)[3:], "---")
+	if indexSecondSeparator == -1 {
+		return *content
+	}
+
+	return strings.Trim((*content)[indexSecondSeparator+6:], "\n")
 }
 
 func rowType(row string) string {
@@ -204,6 +212,9 @@ func rowType(row string) string {
 	}
 	if strings.HasPrefix(row, "[button") {
 		return "button"
+	}
+	if row == "" {
+		return "empty"
 	}
 	return "paragraph"
 }
