@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -8,14 +9,26 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/a-h/templ"
+
 	"potblog/components"
-	"potblog/handlers"
 )
 
 var (
 	_, b, _, _ = runtime.Caller(0)
 	Root       = filepath.Join(filepath.Dir(b), "..")
 )
+
+func offlineRender(t templ.Component) string {
+	buf := templ.GetBuffer()
+	defer templ.ReleaseBuffer(buf)
+
+	if err := t.Render(context.Background(), buf); err != nil {
+		return ""
+	}
+
+	return buf.String()
+}
 
 func ReadMarkdownFile(relative_filepath string) string {
 	filepath := filepath.Join(Root, relative_filepath)
@@ -154,16 +167,15 @@ func markdownToRawHTML(md *string) (string, error) {
 
 		switch row_type {
 		case "title_h1":
-			html += handlers.OfflineRender(components.TitleH1(row[2:]))
+			html += offlineRender(components.TitleH1(row[2:]))
 		case "title_h2":
-			html += handlers.OfflineRender(components.TitleH2(row[3:]))
+			html += offlineRender(components.TitleH2(row[3:]))
 		case "paragraph":
-			html += handlers.OfflineRender(components.Paragraph(row))
+			html += offlineRender(components.Paragraph(row))
 		case "quote":
-			html += handlers.OfflineRender(components.Blockquote(row[2:]))
+			html += offlineRender(components.Blockquote(row[2:]))
 		case "code":
 			language := strings.Trim(row, "`")
-			fmt.Println(language)
 
 			codeBlockMd := ""
 			for _, codeRow := range rows[idx+1:] {
@@ -174,10 +186,10 @@ func markdownToRawHTML(md *string) (string, error) {
 				codeBlockMd += codeRow + "\n"
 			}
 
-			html += handlers.OfflineRender(components.CodeBlock(language, codeBlockMd))
+			html += offlineRender(components.CodeBlock(language, codeBlockMd))
 		case "button":
 			url, icon, text := extractButtonTags(row)
-			html += handlers.OfflineRender(components.Button(url, icon, text))
+			html += offlineRender(components.Button(url, icon, text))
 		case "empty":
 			html += "\n\n"
 		}

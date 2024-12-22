@@ -1,20 +1,14 @@
 package handlers
 
 import (
-	"context"
 	"fmt"
 	"log"
-	"path/filepath"
-	"runtime"
 
 	"github.com/a-h/templ"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
-)
 
-var (
-	_, b, _, _ = runtime.Caller(0)
-	basepath   = filepath.Dir(b)
+	"potblog/services"
 )
 
 func Init() {
@@ -25,7 +19,35 @@ func Init() {
 		log.Println("WARNING : Failed to load .env file")
 	}
 
+	err = generateStaticArticles()
+	if err != nil {
+		log.Fatalf("Failed to generate static articles: %s", err)
+	}
+
 	fmt.Println("Startup sequence done.")
+}
+
+func generateStaticArticles() error {
+	articles, err := services.GetArticles()
+
+	if err != nil {
+		return err
+	}
+
+	for _, article := range articles {
+		md := services.ReadMarkdownFile(fmt.Sprintf("assets/articles/markdown/%s", article))
+		html, err := services.MarkdownToHTML(&md)
+		if err != nil {
+			return err
+		}
+
+		err = services.SaveArticle(article, html.RawHTML)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func Render(ctx echo.Context, statusCode int, t templ.Component) error {
@@ -37,15 +59,4 @@ func Render(ctx echo.Context, statusCode int, t templ.Component) error {
 	}
 
 	return ctx.HTML(statusCode, buf.String())
-}
-
-func OfflineRender(t templ.Component) string {
-	buf := templ.GetBuffer()
-	defer templ.ReleaseBuffer(buf)
-
-	if err := t.Render(context.Background(), buf); err != nil {
-		return ""
-	}
-
-	return buf.String()
 }
