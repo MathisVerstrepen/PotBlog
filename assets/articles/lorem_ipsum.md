@@ -1,7 +1,7 @@
 ---
 title: This is an article !
 description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc.
-published: 2024-08-13
+date: 2024-08-13
 tags: lorem, ipsum
 author: Mathis Verstrepen
 ---
