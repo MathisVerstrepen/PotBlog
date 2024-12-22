@@ -22,9 +22,9 @@ jobs:
           go-version: '1.23.0'
       - name: Install dependencies
         run: |
-          rm -rf go.mod go.sum
-          go mod init potblog
-          go mod tidy
+          go install github.com/a-h/templ/cmd/templ@latest
+          templ generate
+          go mod download
       - name: Build
         run: go build -v ./...
       - name: Test with the Go CLI
