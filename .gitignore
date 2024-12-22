@@ -17,6 +17,7 @@
 /go.sum
 /tmp
 *_templ.go
+go.work.sum
 
 # Node.js
 node_modules/
