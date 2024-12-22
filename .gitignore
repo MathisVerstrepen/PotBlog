@@ -1,0 +1,32 @@
+# Golang
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+*.prof
+*.trace
+*.test
+*.test.out
+*.test.prof
+*.test.trace
+/vendor/
+/bin/
+/go.sum
+/tmp
+*_templ.go
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Env
+.env
+
+# Tailwind
+output.css
+
+# Other
+.directory

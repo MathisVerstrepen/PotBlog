@@ -1,0 +1,59 @@
+package components
+
+import "os"
+
+func getEnv(key string) string {
+    return os.Getenv(key)
+}
+
+templ layout(contents templ.Component, title string) {
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8"></meta>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+
+        <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
+        <link rel="manifest" href="assets/favicon/site.webmanifest">
+
+        <link rel="stylesheet" href="/assets/css/output.css"></link>
+        <title>{title}</title>
+
+        <script src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.min.js"></script>
+
+        if (getEnv("ENV") != "prod") {
+            @templ.JSONScript("port", getEnv("PORT"))
+            <script>
+                const port = JSON.parse(document.getElementById('port').textContent);
+                const socket = new WebSocket(`ws://${window.location.hostname}:${port}/ws`);
+
+                socket.addEventListener("close", (event) => {
+                    let interval = setInterval(() => {
+                        fetch("/").then((response) => {
+                            if (response.ok) {
+                                console.log("Connection closed, but ping fetched successfully!");
+                                clearInterval(interval);
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 100);
+                            }
+                        });
+                    }, 200);
+                });
+            </script>
+        }
+    </head>
+
+    <body>
+        @contents
+    </body>
+
+    </html>
+}
+
+templ Root(contents templ.Component, title string) {
+    @layout(contents, title)
+}
