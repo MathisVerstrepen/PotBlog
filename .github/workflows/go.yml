@@ -5,27 +5,37 @@ name: Go
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.23.0'
+          go-version: "1.23.0"
+
       - name: Install dependencies
         run: |
+          go mod init potblog
+          go get github.com/labstack/echo/v4
+          go get github.com/labstack/echo/v4/middleware
+          go get github.com/a-h/templ
+          go get github.com/joho/godotenv
+          go get golang.org/x/net/websocket
+          go get github.com/a-h/templ/runtime
+          go mod tidy
           go install github.com/a-h/templ/cmd/templ@latest
           templ generate
-          go mod download
+
       - name: Build
         run: go build -v ./...
+
       - name: Test with the Go CLI
         run: go test ./...
