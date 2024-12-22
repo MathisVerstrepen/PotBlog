@@ -303,42 +303,42 @@ func Test_markdownToRawHTML(t *testing.T) {
 			args: args{
 				md: pointerTo("# This is an article !"),
 			},
-			want:    "<h1>This is an article !</h1>",
+			want:    `<h1 class="article-title-h1">This is an article !</h1>`,
 			wantErr: false,
 		}, {
 			name: "givenTitleH2Markdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
 				md: pointerTo("## This is an article !"),
 			},
-			want:    "<h2>This is an article !</h2>",
+			want:    `<h2 class="article-title-h2">This is an article !</h2>`,
 			wantErr: false,
 		}, {
 			name: "givenTitleParagraphMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
 				md: pointerTo("This is a paragraph."),
 			},
-			want:    "<p>This is a paragraph.</p>",
+			want:    `<p class="article-paragraph">This is a paragraph.</p>`,
 			wantErr: false,
 		}, {
 			name: "givenTitleQuoteMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
 				md: pointerTo("> This is a quote."),
 			},
-			want:    "<blockquote>This is a quote.</blockquote>",
+			want:    `<blockquote class="article-blockquote">This is a quote.</blockquote>`,
 			wantErr: false,
 		}, {
 			name: "givenTitleCodeMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
 				md: pointerTo("```python\nprint('Hello, World!')\n```"),
 			},
-			want:    "<div><p>python</p><pre><code>print('Hello, World!')\n</code></pre></div>",
+			want:    "<div class=\"article-codeblock\"><p class=\"article-language\">python</p><pre class=\"article-code\"><code>print('Hello, World!')\n</code></pre></div>",
 			wantErr: false,
 		}, {
 			name: "givenTitleButtonMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
 				md: pointerTo("[button url='https://github.com/MathisVerstrepen' text='Github']"),
 			},
-			want:    `<a href="https://github.com/MathisVerstrepen" role="button">Github</a>`,
+			want:    `<a href="https://github.com/MathisVerstrepen" role="button" class="article-button">Github</a>`,
 			wantErr: false,
 		},
 	}

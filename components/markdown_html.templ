@@ -1,33 +1,30 @@
 package components
 
 templ TitleH1(title string) {
-    <h1>@templ.Raw(title)</h1>
+    <h1 class="article-title-h1">@templ.Raw(title)</h1>
 }
 
 templ TitleH2(title string) {
-    <h2>@templ.Raw(title)</h2>
+    <h2 class="article-title-h2">@templ.Raw(title)</h2>
 }
 
 templ Paragraph(content string) {
-    <p>@templ.Raw(content)</p>
+    <p class="article-paragraph">@templ.Raw(content)</p>
 }
 
 templ CodeBlock(language, code string) {
-    <div>
-        <p>@templ.Raw(language)</p>
-        <pre>
-            <code>@templ.Raw(code)</code>
-        </pre>
+    <div class="article-codeblock">
+        <p class="article-language">@templ.Raw(language)</p>
+        <pre class="article-code"><code>@templ.Raw(code)</code></pre>
     </div>
 }
 
 templ Blockquote(content string) {
-    <blockquote>@templ.Raw(content)</blockquote>
+    <blockquote class="article-blockquote">@templ.Raw(content)</blockquote>
 }
 
 templ Button(url, icon, text string) {
-    <a href={ templ.SafeURL(url) } 
-        role="button">
+    <a href={ templ.SafeURL(url) } role="button" class="article-button">
         if (icon != "") {
             @UseIcon(icon, "black", "medium")
         }
