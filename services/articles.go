@@ -26,6 +26,16 @@ func GetArticles() ([]string, error) {
 	return articles, nil
 }
 
+func GetArticle(article string) (string, error) {
+	article += ".html"
+	file, err := os.ReadFile(path.Join(Root, HTMLArticlesPath, article))
+	if err != nil {
+		return "", err
+	}
+
+	return string(file), nil
+}
+
 func SaveArticle(article string, content string) error {
 	article = strings.Replace(article, ".md", ".html", 1)
 

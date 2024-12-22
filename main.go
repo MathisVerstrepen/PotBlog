@@ -23,6 +23,9 @@ func main() {
 	// ---- Home Routes ---- //
 	e.GET("/", handlers.HomeHandler)
 
+	// ---- Article Routes ---- //
+	e.GET("/article/:article", handlers.ServeArticle)
+
 	// ---- Global Routes ---- //
 	e.GET("/ping", handlers.GlobalPing)
 	if os.Getenv("ENV") != "prod" {
