@@ -4,22 +4,22 @@
 
 @layer components {
     .article-title-h1 {
-        @apply text-4xl font-bold;
+        @apply text-4xl font-bold font-sans text-grey my-6;
     }
 
     .article-title-h2 {
-        @apply text-3xl font-bold;
+        @apply text-3xl font-bold font-sans text-grey my-6;
     }
 
     .article-paragraph {
-        @apply text-base;
+        @apply text-base text-black my-3;
     }
 
     .article-codeblock {
-        @apply text-sm;
+        @apply text-sm bg-green text-beige rounded-2xl px-6 py-3 my-3;
 
         .article-language {
-            @apply text-base font-bold;
+            @apply text-base font-bold bg-beige text-grey rounded-full px-3 w-fit mb-3;
         }
 
         .article-code {
@@ -28,10 +28,38 @@
     }
 
     .article-blockquote {
-        @apply text-base;
+        @apply text-base my-3;
     }
 
     .article-button {
-        @apply text-base font-bold;
+        @apply text-base font-bold my-3;
+    }
+}
+
+@layer base {
+    @font-face {
+        font-family: "Archivo-Variable";
+        src: url("/assets/fonts/archivoComplete/Archivo-Variable.woff2")
+                format("woff2"),
+            url("/assets/fonts/archivoComplete/Archivo-Variable.woff")
+                format("woff"),
+            url("/assets/fonts/archivoComplete/Archivo-Variable.ttf")
+                format("truetype");
+        font-weight: 100 900;
+        font-display: swap;
+        font-style: normal;
+    }
+
+    @font-face {
+        font-family: "ClashDisplay-Variable";
+        src: url("/assets/fonts/clashDisplay/ClashDisplay-Variable.woff2")
+                format("woff2"),
+            url("/assets/fonts/clashDisplay/ClashDisplay-Variable.woff")
+                format("woff"),
+            url("/assets/fonts/clashDisplay/ClashDisplay-Variable.ttf")
+                format("truetype");
+        font-weight: 200 700;
+        font-display: swap;
+        font-style: normal;
     }
 }

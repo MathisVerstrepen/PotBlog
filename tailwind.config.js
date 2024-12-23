@@ -11,6 +11,10 @@ module.exports = {
                 black: "#181C14",
             },
         },
+        fontFamily: {
+            sans: ["ClashDisplay-Variable", "sans-serif"],
+            serif: ["Archivo-Variable", "serif"],
+        },
     },
     plugins: [],
 };

@@ -32,7 +32,7 @@ templ layout(contents templ.Component, title string) {
 
                 socket.addEventListener("close", (event) => {
                     let interval = setInterval(() => {
-                        fetch("/").then((response) => {
+                        fetch("/ping").then((response) => {
                             if (response.ok) {
                                 console.log("Connection closed, but ping fetched successfully!");
                                 clearInterval(interval);
@@ -47,7 +47,7 @@ templ layout(contents templ.Component, title string) {
         }
     </head>
 
-    <body class="bg-beige relative">
+    <body class="bg-beige relative font-serif">
         <div class="relative z-10">
             @contents
         </div>
