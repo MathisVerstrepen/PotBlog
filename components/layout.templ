@@ -51,6 +51,7 @@ templ layout(contents templ.Component, title string) {
         <div class="relative z-10 max-w-[1366px] mx-auto py-16">
             @navBar()
             @contents
+            @footer()
         </div>
         @Svg()
         <div class="absolute top-0 left-0 bg-repeat w-screen h-screen z-0 opacity-50" style="background-image: url(/assets/images/noise.png);"></div>
@@ -74,9 +75,27 @@ templ navBar() {
             <a href="/articles" class="text-2xl font-bold font-sans mx-10 text-green hover:text-dark_green duration-200">Articles</a>
             <a href="/other" class="text-2xl font-bold font-sans mx-10 text-green hover:text-dark_green duration-200">Other</a>
         </div>
-        <div>
-            <a href="https://portfolio.diikstra.fr" class="text-xl font-bold font-sans mx-5 text-grey hover:text-black duration-200">About Me</a>
-            <a href="https://portfolio.diikstra.fr/contact" class="text-xl font-bold font-sans ml-5 text-grey hover:text-black duration-200">Contact</a>
-        </div>
     </nav>
+}
+
+templ footer() {
+    <footer class="flex flex-col justify-center items-center mt-20">
+        <div class="flex space-x-4 w-full justify-center items-center mb-10">
+            <hr width="30%" class="border-1 border-grey"></hr>
+            <a href="https://x.com/mathis_v1" target="_blank">@UseIcon("brand-x", "rgb(60 61 55)", "large")</a>
+            <a href="https://www.linkedin.com/in/mathis-verstrepen/" target="_blank">@UseIcon("brand-linkedin", "rgb(60 61 55)", "large")</a>
+            <a href="https://github.com/MathisVerstrepen" target="_blank">@UseIcon("brand-github", "rgb(60 61 55)", "large")</a>
+            <hr width="30%" class="border-1 border-grey"></hr>
+        </div>
+        <div class="flex">
+            @UseIcon("teapot", "rgb(60 61 55)", "large")
+            <a href="/" class="text-2xl font-bold font-sans text-grey">PotBlog</a>            
+        </div>
+        <p class="text-sm text-grey">Copyright © 2024 PotBlog</p>
+        <div class="flex space-x-4 mt-5 items-center">
+            <a href="https://portfolio.diikstra.fr" target="_blank" class="underline font-bold font-sans text-grey hover:text-black duration-200">About Me</a>
+            <div class="w-1 h-4 bg-grey rounded-full opacity-30"></div>
+            <a href="https://portfolio.diikstra.fr/contact" target="_blank" class="underline font-bold font-sans text-grey hover:text-black duration-200">Contact</a>
+        </div>
+    </footer>
 }
