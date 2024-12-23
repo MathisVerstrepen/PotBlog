@@ -22,9 +22,10 @@ func main() {
 
 	// ---- Home Routes ---- //
 	e.GET("/", handlers.HomeHandler)
+	e.GET("/languages", handlers.LanguageSelector)
 
 	// ---- Article Routes ---- //
-	e.GET("/article/:article", handlers.ServeArticle)
+	e.GET("/:language/article/:article", handlers.ServeArticle)
 
 	// ---- Global Routes ---- //
 	e.GET("/ping", handlers.GlobalPing)

@@ -11,3 +11,7 @@ import (
 func HomeHandler(c echo.Context) error {
 	return Render(c, http.StatusOK, comp.Root(comp.Home(), "Home"))
 }
+
+func LanguageSelector(c echo.Context) error {
+	return Render(c, http.StatusOK, comp.LanguageSelectorMenu())
+}

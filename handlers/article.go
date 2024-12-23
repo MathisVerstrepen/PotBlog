@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -11,6 +12,9 @@ import (
 
 func ServeArticle(c echo.Context) error {
 	article := c.Param("article")
+	language := c.Param("language")
+
+	fmt.Println("language:", language)
 
 	html, err := services.GetArticle(article)
 	if err != nil {
