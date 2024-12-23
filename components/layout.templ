@@ -14,10 +14,10 @@ templ layout(contents templ.Component, title string) {
         <meta charset="UTF-8"></meta>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
 
-        <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
-        <link rel="manifest" href="assets/favicon/site.webmanifest">
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+        <link rel="manifest" href="/assets/favicon/site.webmanifest">
 
         <link rel="stylesheet" href="/assets/css/output.css"></link>
         <title>{title}</title>
@@ -47,9 +47,12 @@ templ layout(contents templ.Component, title string) {
         }
     </head>
 
-    <body>
-        @contents
+    <body class="bg-beige relative">
+        <div class="relative z-10">
+            @contents
+        </div>
         @Svg()
+        <div class="absolute top-0 left-0 bg-repeat w-screen h-screen z-0 opacity-50" style="background-image: url(/assets/images/noise.png);"></div>
     </body>
 
     </html>
