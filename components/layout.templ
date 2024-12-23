@@ -48,7 +48,8 @@ templ layout(contents templ.Component, title string) {
     </head>
 
     <body class="bg-beige relative font-serif">
-        <div class="relative z-10">
+        <div class="relative z-10 max-w-[1366px] mx-auto py-16">
+            @navBar()
             @contents
         </div>
         @Svg()
@@ -60,4 +61,22 @@ templ layout(contents templ.Component, title string) {
 
 templ Root(contents templ.Component, title string) {
     @layout(contents, title)
+}
+
+templ navBar() {
+    <nav class="flex justify-between items-center mb-20">
+        <div class="flex items-center">
+            <div class="flex items-center mr-10">
+                @UseIcon("teapot", "rgb(60 61 55)", "large")
+                <a href="/" class="text-2xl font-bold font-sans text-grey ml-1">PotBlog</a>            
+            </div>
+            <a href="/" class="text-2xl font-bold font-sans mx-10 text-green hover:text-dark_green duration-200">Home</a>
+            <a href="/articles" class="text-2xl font-bold font-sans mx-10 text-green hover:text-dark_green duration-200">Articles</a>
+            <a href="/other" class="text-2xl font-bold font-sans mx-10 text-green hover:text-dark_green duration-200">Other</a>
+        </div>
+        <div>
+            <a href="https://portfolio.diikstra.fr" class="text-xl font-bold font-sans mx-5 text-grey hover:text-black duration-200">About Me</a>
+            <a href="https://portfolio.diikstra.fr/contact" class="text-xl font-bold font-sans ml-5 text-grey hover:text-black duration-200">Contact</a>
+        </div>
+    </nav>
 }
