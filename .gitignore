@@ -29,6 +29,11 @@ package-lock.json
 # Tailwind
 output.css
 
+# Database
+*.db
+*.db-shm
+*.db-wal
+
 # Other
 .directory
 assets/articles/html

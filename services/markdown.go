@@ -15,6 +15,7 @@ import (
 	"github.com/a-h/templ"
 
 	"potblog/components"
+	"potblog/infrastructure"
 )
 
 var (
@@ -49,17 +50,9 @@ func ReadMarkdownFile(relative_filepath string) string {
 	return string(data)
 }
 
-type Metadata struct {
-	Title       string
-	Description string
-	Date        string
-	Tags        []string
-	Author      string
-}
-
 type MarkdownHTML struct {
 	RawHTML  string
-	Metadata Metadata
+	Metadata infrastructure.Metadata
 }
 
 func MarkdownToHTML(md *string) (MarkdownHTML, error) {
@@ -87,15 +80,15 @@ var MetadataTagMap = map[string]string{
 	"author":      "Author",
 }
 
-func markdownToMetadata(md *string) (Metadata, error) {
+func markdownToMetadata(md *string) (infrastructure.Metadata, error) {
 	metadataBlock, err := extractMetadataBlock(*md)
 	if err != nil {
-		return Metadata{}, err
+		return infrastructure.Metadata{}, err
 	}
 
 	metadataLines := strings.Split(metadataBlock, "\n")
 
-	metadata := Metadata{}
+	metadata := infrastructure.Metadata{}
 	for _, line := range metadataLines {
 		mdTag := strings.Split(line, ":")
 		if len(mdTag) < 2 {

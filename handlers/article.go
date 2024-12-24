@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	comp "potblog/components"
+	"potblog/infrastructure"
 	"potblog/services"
 )
 
@@ -21,5 +22,10 @@ func ServeArticle(c echo.Context) error {
 		return c.String(http.StatusNotFound, "Article not found")
 	}
 
-	return Render(c, http.StatusOK, comp.Root(comp.Article(html), article))
+	metadata, err := infrastructure.Database.GetArticle(article)
+	if err != nil {
+		return c.String(http.StatusNotFound, "Article not found")
+	}
+
+	return Render(c, http.StatusOK, comp.Root(comp.Article(metadata, html), article))
 }

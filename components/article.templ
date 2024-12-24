@@ -1,7 +1,10 @@
 package components
 
-templ Article(html string) {
+import "potblog/infrastructure"
+
+templ Article(metadata infrastructure.Metadata, html string) {
     <article>
+        @TitleH1(metadata.Title)
         @templ.Raw(html)
     </article>
 }

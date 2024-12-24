@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	handlers "potblog/handlers"
+	"potblog/handlers"
 )
 
 func main() {

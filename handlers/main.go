@@ -8,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 
+	"potblog/infrastructure"
 	"potblog/services"
 )
 
@@ -17,6 +18,11 @@ func Init() {
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Println("WARNING : Failed to load .env file")
+	}
+
+	err = infrastructure.Open("potblog.db")
+	if err != nil {
+		log.Fatalf("Failed to open database: %s", err)
 	}
 
 	err = generateStaticArticles()
@@ -36,12 +42,18 @@ func generateStaticArticles() error {
 
 	for _, article := range articles {
 		md := services.ReadMarkdownFile(fmt.Sprintf("assets/articles/markdown/%s", article))
-		html, err := services.MarkdownToHTML(&md)
+		articleData, err := services.MarkdownToHTML(&md)
 		if err != nil {
 			return err
 		}
 
-		err = services.SaveArticle(article, html.RawHTML)
+		err = services.SaveArticle(article, articleData.RawHTML)
+		if err != nil {
+			return err
+		}
+
+		articleName := article[:len(article)-3]
+		err = infrastructure.Database.SaveArticle(articleData.Metadata, articleName)
 		if err != nil {
 			return err
 		}

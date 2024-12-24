@@ -4,11 +4,11 @@
 
 @layer components {
     .article-title-h1 {
-        @apply text-4xl font-bold font-sans text-grey my-10;
+        @apply text-5xl font-bold font-sans text-grey my-10;
     }
 
     .article-title-h2 {
-        @apply text-3xl font-bold font-sans text-grey my-10;
+        @apply text-4xl font-bold font-sans text-grey my-10;
     }
 
     .article-paragraph {

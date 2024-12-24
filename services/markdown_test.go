@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"potblog/infrastructure"
 	"reflect"
 	"strings"
 	"testing"
@@ -79,7 +80,7 @@ func TestMarkdownToHTML(t *testing.T) {
 			},
 			want: MarkdownHTML{
 				RawHTML: getTestFileData("TestMarkdownToHTMLResult.html"),
-				Metadata: Metadata{
+				Metadata: infrastructure.Metadata{
 					Title:       "This is an article !",
 					Description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec odio vitae nunc.",
 					Date:        "2024-08-13",
@@ -118,7 +119,7 @@ func Test_markdownToMetadata(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    Metadata
+		want    infrastructure.Metadata
 		wantErr bool
 	}{
 		{
@@ -132,7 +133,7 @@ tags: lorem, ipsum
 author: Mathis Verstrepen
 ---`),
 			},
-			want: Metadata{
+			want: infrastructure.Metadata{
 				Title:       "This is an article !",
 				Description: "desc.",
 				Date:        "2024-08-13",
@@ -145,7 +146,7 @@ author: Mathis Verstrepen
 			args: args{
 				md: pointerTo(`# This is an article !`),
 			},
-			want:    Metadata{},
+			want:    infrastructure.Metadata{},
 			wantErr: true,
 		},
 	}

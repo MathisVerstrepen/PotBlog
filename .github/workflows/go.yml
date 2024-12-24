@@ -29,6 +29,7 @@ jobs:
           go get github.com/joho/godotenv
           go get golang.org/x/net/websocket
           go get github.com/a-h/templ/runtime
+          go get zombiezen.com/go/sqlite
           go mod tidy
           go install github.com/a-h/templ/cmd/templ@latest
           templ generate
