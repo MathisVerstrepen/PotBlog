@@ -160,7 +160,7 @@ func parseTags(value string) []string {
 func markdownToRawHTML(md *string) (string, error) {
 	rows := strings.Split(skipMetadataBlock(md), "\n")
 
-	var html string
+	var html strings.Builder
 
 	idx := 0
 	for idx < len(rows) {
@@ -169,13 +169,13 @@ func markdownToRawHTML(md *string) (string, error) {
 
 		switch row_type {
 		case "title_h1":
-			html += offlineRender(components.TitleH1(row[2:]))
+			html.WriteString(offlineRender(components.TitleH1(row[2:])))
 		case "title_h2":
-			html += offlineRender(components.TitleH2(row[3:]))
+			html.WriteString(offlineRender(components.TitleH2(row[3:])))
 		case "paragraph":
-			html += offlineRender(components.Paragraph(row))
+			html.WriteString(offlineRender(components.Paragraph(row)))
 		case "quote":
-			html += offlineRender(components.Blockquote(row[2:]))
+			html.WriteString(offlineRender(components.Blockquote(row[2:])))
 		case "code":
 			language := strings.Trim(row, "`")
 
@@ -189,18 +189,18 @@ func markdownToRawHTML(md *string) (string, error) {
 			}
 
 			codeHash := generateHashFromCodeBlock(codeBlockMd)
-			html += offlineRender(components.CodeBlock(language, codeBlockMd, codeHash))
+			html.WriteString(offlineRender(components.CodeBlock(language, codeBlockMd, codeHash)))
 		case "button":
 			url, icon, text := extractButtonTags(row)
-			html += offlineRender(components.Button(url, icon, text))
+			html.WriteString(offlineRender(components.Button(url, icon, text)))
 		case "empty":
-			html += "\n\n"
+			html.WriteString("\n\n")
 		}
 
 		idx++
 	}
 
-	return html, nil
+	return html.String(), nil
 }
 
 func skipMetadataBlock(content *string) string {
