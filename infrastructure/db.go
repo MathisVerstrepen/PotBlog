@@ -1,25 +1,27 @@
 package infrastructure
 
 import (
+	"context"
 	"strings"
 
-	"zombiezen.com/go/sqlite"
 	"zombiezen.com/go/sqlite/sqlitex"
 )
 
 type DB struct {
-	*sqlite.Conn
+	Pool *sqlitex.Pool
 }
 
 var Database *DB
 
 func Open(path string) error {
-	conn, err := sqlite.OpenConn(path)
+	dbpool, err := sqlitex.NewPool(path, sqlitex.PoolOptions{
+		PoolSize: 10,
+	})
 	if err != nil {
 		return err
 	}
 
-	Database = &DB{conn}
+	Database = &DB{Pool: dbpool}
 
 	err = initTables()
 	if err != nil {
@@ -39,9 +41,12 @@ func initTables() error {
 			tags TEXT,
 			author TEXT
         );`
-	return sqlitex.ExecuteTransient(Database.Conn, strings.TrimSpace(query), nil)
-}
 
-func (db *DB) Close() error {
-	return db.Conn.Close()
+	conn, err := Database.Pool.Take(context.Background())
+	if err != nil {
+		return err
+	}
+	defer Database.Pool.Put(conn)
+
+	return sqlitex.Execute(conn, strings.TrimSpace(query), nil)
 }
