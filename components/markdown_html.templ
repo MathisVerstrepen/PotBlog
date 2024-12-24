@@ -41,9 +41,9 @@ templ Blockquote(content string) {
 }
 
 templ Button(url, icon, text string) {
-    <a href={ templ.SafeURL(url) } role="button" class="article-button">
+    <a href={ templ.SafeURL(url) } role="button" class="article-button" target="_blank">
         if (icon != "") {
-            @UseIcon(icon, "black", "medium")
+            @UseIcon(icon, "currentColor", "medium")
         }
         @templ.Raw(text)
     </a>

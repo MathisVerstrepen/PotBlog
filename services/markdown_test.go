@@ -338,7 +338,7 @@ func Test_markdownToRawHTML(t *testing.T) {
 			args: args{
 				md: pointerTo("[button url='https://github.com/MathisVerstrepen' text='Github']"),
 			},
-			want:    []string{`<a href="https://github.com/MathisVerstrepen" role="button" class="article-button">Github</a>`},
+			want:    []string{`<a href="https://github.com/MathisVerstrepen" role="button" class="article-button" target="_blank">Github</a>`},
 			wantErr: false,
 		},
 	}

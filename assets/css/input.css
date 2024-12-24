@@ -19,7 +19,7 @@
         @apply text-sm bg-green text-beige rounded-2xl px-6 py-3 my-8;
 
         .article-copy-button {
-            @apply text-grey rounded-full px-3 h-7 overflow-hidden absolute right-3 bg-beige hover:bg-beige_dark duration-200;
+            @apply text-grey rounded-full px-3 h-7 overflow-hidden absolute right-3 bg-beige hover:bg-dark_beige duration-200;
         }
 
         .article-language {
@@ -36,7 +36,11 @@
     }
 
     .article-button {
-        @apply text-base font-bold my-5;
+        @apply text-base text-beige font-bold font-sans py-1 pl-3 pr-4 flex items-center w-fit bg-orange rounded-2xl shadow-sm border-2 border-dark_orange hover:bg-dark_orange duration-200;
+
+        svg {
+            @apply mr-1;
+        }
     }
 }
 

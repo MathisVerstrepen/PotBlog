@@ -81,7 +81,7 @@ templ navBar() {
 
 templ LanguageSelectorButton() {
     <div class="relative">
-        <div class="w-28 flex items-center justify-center bg-beige border-2 border-beige_dark rounded-2xl py-1 shadow-sm z-20 relative hover:bg-beige_dark duration-200" 
+        <div class="w-28 flex items-center justify-center bg-beige border-2 border-dark_beige rounded-2xl py-1 shadow-sm z-20 relative hover:bg-dark_beige duration-200" 
             role="button" id="language-selector" hx-get="/languages" hx-swap="afterend" hx-trigger="click[document.getElementById('language-selector-menu') == null]">
             <p class="font-sans font-bold text-grey text-xl ml-1">En</p>
             @UseIcon("world", "rgb(60 61 55)", "medium")
@@ -91,7 +91,7 @@ templ LanguageSelectorButton() {
 }
 
 templ LanguageSelectorMenu() {
-    <div class="w-28 absolute top-5 right-0 flex flex-col items-center justify-center bg-beige_dark border-2 border-beige_dark rounded-b-2xl px-6 pt-6 shadow-sm z-10" 
+    <div class="w-28 absolute top-5 right-0 flex flex-col items-center justify-center bg-dark_beige border-2 border-dark_beige rounded-b-2xl px-6 pt-6 shadow-sm z-10" 
         id="language-selector-menu">
         <div class="text-grey w-24 hover:bg-beige duration-200 px-3 py-1 rounded-full mb-1" role="button">English</div>
         <div class="text-grey w-24 hover:bg-beige duration-200 px-3 py-1 rounded-full mb-1" role="button">Français</div>
