@@ -527,3 +527,73 @@ func Test_extractButtonTags(t *testing.T) {
 		})
 	}
 }
+
+func Test_boldify(t *testing.T) {
+	type args struct {
+		text string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "givenTextWithNoAsterix_WhenBoldify_ThenReturnText",
+			args: args{
+				text: "This is a paragraph.",
+			},
+			want: "This is a paragraph.",
+		}, {
+			name: "givenTextWithAsterix_WhenBoldify_ThenReturnBoldText",
+			args: args{
+				text: "**This is a paragraph.**",
+			},
+			want: "<b>This is a paragraph.</b>",
+		}, {
+			name: "givenTextWithMultipleAsterix_WhenBoldify_ThenReturnBoldText",
+			args: args{
+				text: "**This is a paragraph.** **This is a paragraph.**",
+			},
+			want: "<b>This is a paragraph.</b> <b>This is a paragraph.</b>",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := boldify(tt.args.text); got != tt.want {
+				t.Errorf("boldify() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_linkify(t *testing.T) {
+	type args struct {
+		text string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "givenTextWithNoLink_WhenLinkify_ThenReturnText",
+			args: args{
+				text: "This is a paragraph.",
+			},
+			want: "This is a paragraph.",
+		}, {
+			name: "givenTextWithLink_WhenLinkify_ThenReturnLink",
+			args: args{
+				text: `[This is a link](https://superlink.com)`,
+			},
+			want: `<a href="https://superlink.com" class="article-external-link" target="_blank">This is a link🡵</a>`,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := linkify(tt.args.text); got != tt.want {
+				t.Errorf("linkify() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
