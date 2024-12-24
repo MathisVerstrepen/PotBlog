@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/a-h/templ"
 	"github.com/joho/godotenv"
@@ -34,6 +35,9 @@ func Init() {
 }
 
 func generateStaticArticles() error {
+	fmt.Println("Generating static articles...")
+	st := time.Now()
+
 	articles, err := services.GetArticles()
 
 	if err != nil {
@@ -41,6 +45,7 @@ func generateStaticArticles() error {
 	}
 
 	for _, article := range articles {
+		fmt.Printf("> Generating article %s\n", article)
 		md := services.ReadMarkdownFile(fmt.Sprintf("assets/articles/markdown/%s", article))
 		articleData, err := services.MarkdownToHTML(&md)
 		if err != nil {
@@ -58,6 +63,8 @@ func generateStaticArticles() error {
 			return err
 		}
 	}
+
+	fmt.Printf("Generated %d articles in %s\n", len(articles), time.Since(st))
 
 	return nil
 }
