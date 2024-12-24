@@ -1,8 +1,11 @@
 package infrastructure
 
 import (
-	"fmt"
+	"context"
 	"strings"
+
+	"zombiezen.com/go/sqlite"
+	"zombiezen.com/go/sqlite/sqlitex"
 )
 
 type Metadata struct {
@@ -16,39 +19,49 @@ type Metadata struct {
 func (db *DB) GetArticle(name string) (Metadata, error) {
 	var metadata Metadata
 	query := `
-		SELECT name, title, description, date, tags, author
-		FROM articles
-		WHERE name = $name;
-	`
+        SELECT name, title, description, date, tags, author
+        FROM articles
+        WHERE name = ?;
+    `
 
-	stmt := db.Conn.Prep(strings.TrimSpace(query))
-	stmt.SetText("$name", name)
+	conn, err := Database.Pool.Take(context.Background())
+	if err != nil {
+		return metadata, err
+	}
+	defer Database.Pool.Put(conn)
 
-	hasRow, err := stmt.Step()
+	err = sqlitex.Execute(conn, strings.TrimSpace(query), &sqlitex.ExecOptions{
+		Args: []interface{}{name},
+		ResultFunc: func(stmt *sqlite.Stmt) error {
+			metadata.Title = stmt.ColumnText(1)
+			metadata.Description = stmt.ColumnText(2)
+			metadata.Date = stmt.ColumnText(3)
+			metadata.Tags = strings.Split(stmt.ColumnText(4), ",")
+			metadata.Author = stmt.ColumnText(5)
+			return nil
+		},
+	})
+
 	if err != nil {
 		return metadata, err
 	}
 
-	if !hasRow {
-		return metadata, fmt.Errorf("article not found")
-	}
-
-	metadata.Title = stmt.GetText("title")
-	metadata.Description = stmt.GetText("description")
-	metadata.Date = stmt.GetText("date")
-	metadata.Tags = strings.Split(stmt.GetText("tags"), ",")
-	metadata.Author = stmt.GetText("author")
-
-	return metadata, err
+	return metadata, nil
 }
 
 func (db *DB) SaveArticle(metadata Metadata, name string) error {
+	conn, err := Database.Pool.Take(context.Background())
+	if err != nil {
+		return err
+	}
+	defer Database.Pool.Put(conn)
+
 	query := `
 		INSERT OR REPLACE INTO articles (name, title, description, date, tags, author)
 		VALUES ($name, $title, $description, $date, $tags, $author);
 	`
 
-	stmt := db.Conn.Prep(strings.TrimSpace(query))
+	stmt := conn.Prep(strings.TrimSpace(query))
 	stmt.SetText("$name", name)
 	stmt.SetText("$title", metadata.Title)
 	stmt.SetText("$description", metadata.Description)
@@ -56,7 +69,7 @@ func (db *DB) SaveArticle(metadata Metadata, name string) error {
 	stmt.SetText("$tags", strings.Join(metadata.Tags, ","))
 	stmt.SetText("$author", metadata.Author)
 
-	_, err := stmt.Step()
+	_, err = stmt.Step()
 	if err != nil {
 		return err
 	}
