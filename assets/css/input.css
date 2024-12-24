@@ -46,6 +46,10 @@
             @apply mr-1;
         }
     }
+
+    article b {
+        @apply text-orange;
+    }
 }
 
 @layer base {

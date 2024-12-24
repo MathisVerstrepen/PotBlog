@@ -200,7 +200,7 @@ func markdownToRawHTML(md *string) (string, error) {
 		idx++
 	}
 
-	return html.String(), nil
+	return boldify(html.String()), nil
 }
 
 func skipMetadataBlock(content *string) string {
@@ -262,4 +262,18 @@ func extractButtonTags(row string) (string, string, string) {
 	text := tagMap["text"]
 
 	return url, icon, text
+}
+
+func boldify(row string) string {
+	starCount := strings.Count(row, "**")
+	if starCount%2 != 0 {
+		return row
+	}
+
+	for i := 0; i < starCount/2; i++ {
+		row = strings.Replace(row, "**", "<b>", 1)
+		row = strings.Replace(row, "**", "</b>", 1)
+	}
+
+	return row
 }
