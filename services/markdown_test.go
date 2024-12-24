@@ -295,7 +295,7 @@ func Test_markdownToRawHTML(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    string
+		want    []string
 		wantErr bool
 	}{
 		{
@@ -303,42 +303,42 @@ func Test_markdownToRawHTML(t *testing.T) {
 			args: args{
 				md: pointerTo("# This is an article !"),
 			},
-			want:    `<h1 class="article-title-h1">This is an article !</h1>`,
+			want:    []string{`<h1 class="article-title-h1">This is an article !</h1>`},
 			wantErr: false,
 		}, {
 			name: "givenTitleH2Markdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
 				md: pointerTo("## This is an article !"),
 			},
-			want:    `<h2 class="article-title-h2">This is an article !</h2>`,
+			want:    []string{`<h2 class="article-title-h2">This is an article !</h2>`},
 			wantErr: false,
 		}, {
 			name: "givenTitleParagraphMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
 				md: pointerTo("This is a paragraph."),
 			},
-			want:    `<p class="article-paragraph">This is a paragraph.</p>`,
+			want:    []string{`<p class="article-paragraph">This is a paragraph.</p>`},
 			wantErr: false,
 		}, {
 			name: "givenTitleQuoteMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
 				md: pointerTo("> This is a quote."),
 			},
-			want:    `<blockquote class="article-blockquote">This is a quote.</blockquote>`,
+			want:    []string{`<blockquote class="article-blockquote">This is a quote.</blockquote>`},
 			wantErr: false,
 		}, {
 			name: "givenTitleCodeMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
 				md: pointerTo("```python\nprint('Hello, World!')\n```"),
 			},
-			want:    "<div class=\"article-codeblock\"><p class=\"article-language\">python</p><pre class=\"article-code\"><code>print('Hello, World!')\n</code></pre></div>",
+			want:    []string{"<div class=\"article-codeblock\">", "<button class=\"article-copy-button\"", "</button><p class=\"article-language\">python</p><pre class=\"article-code\"><code", "print('Hello, World!')\n</code></pre></div>"},
 			wantErr: false,
 		}, {
 			name: "givenTitleButtonMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
 				md: pointerTo("[button url='https://github.com/MathisVerstrepen' text='Github']"),
 			},
-			want:    `<a href="https://github.com/MathisVerstrepen" role="button" class="article-button">Github</a>`,
+			want:    []string{`<a href="https://github.com/MathisVerstrepen" role="button" class="article-button">Github</a>`},
 			wantErr: false,
 		},
 	}
@@ -349,8 +349,10 @@ func Test_markdownToRawHTML(t *testing.T) {
 				t.Errorf("markdownToRawHTML() error = %v\nWantErr %v", err, tt.wantErr)
 				return
 			}
-			if got != tt.want {
-				t.Errorf("markdownToRawHTML() = %v\nWant %v", got, tt.want)
+			for i, html := range tt.want {
+				if !strings.Contains(got, html) {
+					t.Errorf("markdownToRawHTML() = %v\nWant %v", got, tt.want[i])
+				}
 			}
 		})
 	}
@@ -450,6 +452,32 @@ func Test_rowType(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := rowType(tt.args.row); got != tt.want {
 				t.Errorf("rowType() = %v\nWant %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_generateHashFromCodeBlock(t *testing.T) {
+	type args struct {
+		code string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "givenCodeBlock_WhenGenerateHashFromCodeBlock_ThenReturnHash",
+			args: args{
+				code: "print('Hello, World!')\n",
+			},
+			want: "XEkuiIsx",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := generateHashFromCodeBlock(tt.args.code); got != tt.want {
+				t.Errorf("generateHashFromCodeBlock() = %v, want %v", got, tt.want)
 			}
 		})
 	}

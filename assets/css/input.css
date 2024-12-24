@@ -4,19 +4,23 @@
 
 @layer components {
     .article-title-h1 {
-        @apply text-4xl font-bold font-sans text-grey my-6;
+        @apply text-4xl font-bold font-sans text-grey my-10;
     }
 
     .article-title-h2 {
-        @apply text-3xl font-bold font-sans text-grey my-6;
+        @apply text-3xl font-bold font-sans text-grey my-10;
     }
 
     .article-paragraph {
-        @apply text-base text-black my-3;
+        @apply text-base text-black my-5;
     }
 
     .article-codeblock {
-        @apply text-sm bg-green text-beige rounded-2xl px-6 py-3 my-3;
+        @apply text-sm bg-green text-beige rounded-2xl px-6 py-3 my-8;
+
+        .article-copy-button {
+            @apply text-grey rounded-full px-3 h-7 overflow-hidden absolute right-3 bg-beige hover:bg-beige_dark duration-200;
+        }
 
         .article-language {
             @apply text-base font-bold bg-beige text-grey rounded-full px-3 w-fit mb-3;
@@ -28,11 +32,11 @@
     }
 
     .article-blockquote {
-        @apply text-base my-3;
+        @apply text-base my-5;
     }
 
     .article-button {
-        @apply text-base font-bold my-3;
+        @apply text-base font-bold my-5;
     }
 }
 

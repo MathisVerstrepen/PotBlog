@@ -1,5 +1,7 @@
 package components
 
+import "fmt"
+
 templ TitleH1(title string) {
     <h1 class="article-title-h1">@templ.Raw(title)</h1>
 }
@@ -12,10 +14,25 @@ templ Paragraph(content string) {
     <p class="article-paragraph">@templ.Raw(content)</p>
 }
 
-templ CodeBlock(language, code string) {
+script copyToClipboard(elm_id string) {
+    var text = document.getElementById(elm_id).innerHTML;
+    navigator.clipboard.writeText(text);
+
+    var btn = document.getElementById(`copy-${elm_id}`);
+    btn.appendChild(btn.firstElementChild.nextElementSibling);
+    setTimeout(() => {
+        btn.appendChild(btn.firstElementChild.nextElementSibling);
+    }, 2000);
+}
+
+templ CodeBlock(language, code, id string) {
     <div class="article-codeblock">
+        <button class="article-copy-button" onclick={copyToClipboard(id)} id={fmt.Sprintf("copy-%s", id)}>
+            @UseIcon("copy", "currentColor", "medium")
+            @UseIcon("check", "currentColor", "medium")
+        </button>
         <p class="article-language">@templ.Raw(language)</p>
-        <pre class="article-code"><code>@templ.Raw(code)</code></pre>
+        <pre class="article-code"><code id={id}>@templ.Raw(code)</code></pre>
     </div>
 }
 

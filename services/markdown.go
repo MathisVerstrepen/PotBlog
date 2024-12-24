@@ -2,6 +2,8 @@ package services
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"os"
@@ -186,7 +188,8 @@ func markdownToRawHTML(md *string) (string, error) {
 				codeBlockMd += codeRow + "\n"
 			}
 
-			html += offlineRender(components.CodeBlock(language, codeBlockMd))
+			codeHash := generateHashFromCodeBlock(codeBlockMd)
+			html += offlineRender(components.CodeBlock(language, codeBlockMd, codeHash))
 		case "button":
 			url, icon, text := extractButtonTags(row)
 			html += offlineRender(components.Button(url, icon, text))
@@ -229,6 +232,16 @@ func rowType(row string) string {
 		return "empty"
 	}
 	return "paragraph"
+}
+
+func generateHashFromCodeBlock(code string) string {
+	hasher := sha256.New()
+	hasher.Write([]byte(code))
+	hash := hasher.Sum(nil)
+
+	encoded := base64.URLEncoding.EncodeToString(hash)
+
+	return encoded[:8]
 }
 
 func extractButtonTags(row string) (string, string, string) {
