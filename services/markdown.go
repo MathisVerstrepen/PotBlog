@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 
@@ -200,7 +201,11 @@ func markdownToRawHTML(md *string) (string, error) {
 		idx++
 	}
 
-	return boldify(html.String()), nil
+	htmlStr := html.String()
+	htmlStr = linkify(htmlStr)
+	htmlStr = boldify(htmlStr)
+
+	return htmlStr, nil
 }
 
 func skipMetadataBlock(content *string) string {
@@ -264,16 +269,31 @@ func extractButtonTags(row string) (string, string, string) {
 	return url, icon, text
 }
 
-func boldify(row string) string {
-	starCount := strings.Count(row, "**")
+func boldify(text string) string {
+	starCount := strings.Count(text, "**")
 	if starCount%2 != 0 {
-		return row
+		return text
 	}
 
 	for i := 0; i < starCount/2; i++ {
-		row = strings.Replace(row, "**", "<b>", 1)
-		row = strings.Replace(row, "**", "</b>", 1)
+		text = strings.Replace(text, "**", "<b>", 1)
+		text = strings.Replace(text, "**", "</b>", 1)
 	}
 
-	return row
+	return text
+}
+
+func linkify(text string) string {
+	re := regexp.MustCompile(`\[(.*?)\]\((.*?)\)`)
+	matches := re.FindAllStringSubmatchIndex(text, -1)
+
+	for i := len(matches) - 1; i >= 0; i-- {
+		match := matches[i]
+		linkText := text[match[2]:match[3]]
+		linkURL := text[match[4]:match[5]]
+		replacement := offlineRender(components.ExternalLink(linkURL, linkText))
+		text = text[:match[0]] + replacement + text[match[1]:]
+	}
+
+	return text
 }

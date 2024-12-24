@@ -47,6 +47,11 @@
         }
     }
 
+    .article-external-link {
+        @apply text-base text-orange font-bold;
+        text-decoration: underline dotted;
+    }
+
     article b {
         @apply text-orange;
     }

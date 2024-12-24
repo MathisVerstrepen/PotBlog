@@ -48,3 +48,7 @@ templ Button(url, icon, text string) {
         @templ.Raw(text)
     </a>
 }
+
+templ ExternalLink(url, text string) {
+    <a href={templ.SafeURL(url)} class="article-external-link" target="_blank">@templ.Raw(text)🡵</a>
+}
