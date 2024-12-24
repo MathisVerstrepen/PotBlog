@@ -32,7 +32,11 @@
     }
 
     .article-blockquote {
-        @apply text-base my-5;
+        @apply text-base my-5 bg-green text-black bg-opacity-25 py-1 px-5 rounded-r-2xl relative;
+
+        hr {
+            @apply absolute h-full w-2 bg-green top-0 left-0 rounded-r-2xl;
+        }
     }
 
     .article-button {

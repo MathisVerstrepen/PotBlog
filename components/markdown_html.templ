@@ -37,7 +37,7 @@ templ CodeBlock(language, code, id string) {
 }
 
 templ Blockquote(content string) {
-    <blockquote class="article-blockquote">@templ.Raw(content)</blockquote>
+    <blockquote class="article-blockquote"><hr>@templ.Raw(content)</blockquote>
 }
 
 templ Button(url, icon, text string) {
