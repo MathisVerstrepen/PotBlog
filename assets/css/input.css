@@ -48,7 +48,7 @@
     }
 
     .article-external-link {
-        @apply text-orange font-bold;
+        @apply text-orange font-bold hover:text-dark_orange duration-200;
         text-decoration: underline dotted;
     }
 
