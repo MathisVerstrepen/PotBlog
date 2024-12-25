@@ -325,7 +325,7 @@ func Test_markdownToRawHTML(t *testing.T) {
 			args: args{
 				md: pointerTo("> This is a quote."),
 			},
-			want:    []string{`<blockquote class="article-blockquote"><hr>This is a quote.</blockquote>`},
+			want:    []string{`<blockquote class="article-blockquote standard"><hr>`, `This is a quote.</blockquote>`},
 			wantErr: false,
 		}, {
 			name: "givenTitleCodeMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",

@@ -168,8 +168,12 @@ func markdownToRawHTML(md *string) (string, error) {
 			html.WriteString(offlineRender(components.TitleH2(row[3:])))
 		case "paragraph":
 			html.WriteString(offlineRender(components.Paragraph(row)))
+		case "quote-warning":
+			html.WriteString(offlineRender(components.Blockquote(row[13:], "warning")))
+		case "quote-important":
+			html.WriteString(offlineRender(components.Blockquote(row[15:], "important")))
 		case "quote":
-			html.WriteString(offlineRender(components.Blockquote(row[2:])))
+			html.WriteString(offlineRender(components.Blockquote(row[2:], "standard")))
 		case "code":
 			language := strings.Trim(row, "`")
 
@@ -216,6 +220,12 @@ func rowType(row string) string {
 	}
 	if strings.HasPrefix(row, "## ") {
 		return "title_h2"
+	}
+	if strings.HasPrefix(row, "> [!WARNING] ") {
+		return "quote-warning"
+	}
+	if strings.HasPrefix(row, "> [!IMPORTANT] ") {
+		return "quote-important"
 	}
 	if strings.HasPrefix(row, "> ") {
 		return "quote"

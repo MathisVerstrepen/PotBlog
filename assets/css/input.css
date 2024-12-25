@@ -32,10 +32,50 @@
     }
 
     .article-blockquote {
-        @apply my-5 bg-green text-black bg-opacity-25 py-1 px-5 rounded-r-2xl relative;
+        @apply my-5 text-black py-1 px-5 rounded-r-2xl relative flex items-center;
+
+        svg {
+            @apply mr-3 shrink-0;
+        }
 
         hr {
-            @apply absolute h-full w-2 bg-green top-0 left-0 rounded-r-2xl;
+            @apply absolute h-full w-2 top-0 left-0 rounded-r-2xl;
+        }
+
+        &.standard {
+            @apply bg-green bg-opacity-25;
+
+            hr {
+                @apply bg-green;
+            }
+
+            svg {
+                @apply text-green;
+            }
+        }
+
+        &.warning {
+            @apply bg-orange bg-opacity-25;
+
+            hr {
+                @apply bg-orange;
+            }
+
+            svg {
+                @apply text-orange;
+            }
+        }
+
+        &.important {
+            @apply bg-red bg-opacity-25;
+
+            hr {
+                @apply bg-red;
+            }
+
+            svg {
+                @apply text-red;
+            }
         }
     }
 
