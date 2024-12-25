@@ -1,10 +1,43 @@
 package components
 
-import "potblog/infrastructure"
+import (
+    "fmt"
+    "potblog/infrastructure"
+)
 
 templ Article(metadata infrastructure.Metadata, html string) {
     <article>
-        @TitleH1(metadata.Title)
+        @articleHeader(metadata)
         @templ.Raw(html)
     </article>
+}
+
+templ articleHeader(metadata infrastructure.Metadata) {
+    <div class="mb-20">
+        @TitleH1(metadata.Title)
+
+        <div class="flex space-x-4 mt-4 mb-2">
+            @timeChip(metadata.Date)
+            for _, tag := range metadata.Tags {
+                @tagChip(tag)
+            }
+        </div>
+
+        <p class="text-lg text-grey">By {metadata.Author}</p>
+    </div>
+}
+
+templ timeChip(date string) {
+    <time datetime={date} 
+        class="text-beige text-lg font-bold font-sans py-1 px-4 flex items-center w-fit bg-green rounded-2xl shadow-sm border-2 border-dark_green">
+        {date}
+    </time>
+}
+
+templ tagChip(tag string) {
+    <a class="text-orange text-lg font-bold font-sans py-1 px-4 bg-beige rounded-2xl shadow-sm border-2 border-dark_beige hover:bg-dark_beige duration-200"
+        href={templ.SafeURL(fmt.Sprintf("/tags/%s", tag))}
+    >
+        #{tag}
+    </a>
 }

@@ -4,7 +4,7 @@
 
 @layer components {
     .article-title-h1 {
-        @apply text-5xl font-bold font-sans text-grey my-10;
+        @apply text-6xl font-bold font-sans text-grey mt-10;
     }
 
     .article-title-h2 {
@@ -12,7 +12,7 @@
     }
 
     .article-paragraph {
-        @apply text-base text-black my-5;
+        @apply text-black my-5;
     }
 
     .article-codeblock {
@@ -23,7 +23,7 @@
         }
 
         .article-language {
-            @apply text-base font-bold bg-beige text-grey rounded-full px-3 w-fit mb-3;
+            @apply font-bold bg-beige text-grey rounded-full px-3 w-fit mb-3;
         }
 
         .article-code {
@@ -32,7 +32,7 @@
     }
 
     .article-blockquote {
-        @apply text-base my-5 bg-green text-black bg-opacity-25 py-1 px-5 rounded-r-2xl relative;
+        @apply my-5 bg-green text-black bg-opacity-25 py-1 px-5 rounded-r-2xl relative;
 
         hr {
             @apply absolute h-full w-2 bg-green top-0 left-0 rounded-r-2xl;
@@ -40,7 +40,7 @@
     }
 
     .article-button {
-        @apply text-base text-beige font-bold font-sans py-1 pl-3 pr-4 flex items-center w-fit bg-orange rounded-2xl shadow-sm border-2 border-dark_orange hover:bg-dark_orange duration-200;
+        @apply text-beige font-bold font-sans py-1 pl-3 pr-4 flex items-center w-fit bg-orange rounded-2xl shadow-sm border-2 border-dark_orange hover:bg-dark_orange duration-200;
 
         svg {
             @apply mr-1;
@@ -48,7 +48,7 @@
     }
 
     .article-external-link {
-        @apply text-base text-orange font-bold;
+        @apply text-orange font-bold;
         text-decoration: underline dotted;
     }
 
