@@ -19,12 +19,12 @@ func ServeArticle(c echo.Context) error {
 
 	html, err := services.GetArticle(article)
 	if err != nil {
-		return c.String(http.StatusNotFound, "Article not found")
+		return Render(c, http.StatusOK, comp.Root(comp.ArticleNotFound(), fmt.Sprintf("%s - Not found", article)))
 	}
 
 	metadata, err := infrastructure.Database.GetArticle(article)
 	if err != nil {
-		return c.String(http.StatusNotFound, "Article not found")
+		return Render(c, http.StatusOK, comp.Root(comp.ArticleNotFound(), fmt.Sprintf("%s - Not found", article)))
 	}
 
 	return Render(c, http.StatusOK, comp.Root(comp.Article(metadata, html), article))
