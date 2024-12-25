@@ -62,3 +62,10 @@ templ Button(url, icon, text string) {
 templ ExternalLink(url, text string) {
     <a href={templ.SafeURL(url)} class="article-external-link" target="_blank">@templ.Raw(text)🡵</a>
 }
+
+templ Image(src, caption string) {
+    <figure class="article-image">
+        <img src={src} alt={caption}>
+        <figcaption>@templ.Raw(caption)</figcaption>
+    </figure>
+}

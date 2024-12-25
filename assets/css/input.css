@@ -92,6 +92,18 @@
         text-decoration: underline dotted;
     }
 
+    .article-image {
+        @apply w-[500px] mx-auto text-center bg-green bg-opacity-25 rounded-3xl shadow-sm p-2;
+
+        img {
+            @apply rounded-2xl hover:cursor-zoom-in;
+        }
+
+        figcaption {
+            @apply text-grey font-bold text-sm mt-2;
+        }
+    }
+
     article b {
         @apply text-orange;
     }

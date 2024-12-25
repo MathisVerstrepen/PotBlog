@@ -328,6 +328,20 @@ func Test_markdownToRawHTML(t *testing.T) {
 			want:    []string{`<blockquote class="article-blockquote standard"><hr>`, `This is a quote.</blockquote>`},
 			wantErr: false,
 		}, {
+			name: "givenTitleQuoteMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",
+			args: args{
+				md: pointerTo("> [!WARNING] This is a quote."),
+			},
+			want:    []string{`<blockquote class="article-blockquote warning"><hr>`, `This is a quote.</blockquote>`},
+			wantErr: false,
+		}, {
+			name: "givenTitleQuoteMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",
+			args: args{
+				md: pointerTo("> [!IMPORTANT] This is a quote."),
+			},
+			want:    []string{`<blockquote class="article-blockquote important"><hr>`, `This is a quote.</blockquote>`},
+			wantErr: false,
+		}, {
 			name: "givenTitleCodeMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",
 			args: args{
 				md: pointerTo("```python\nprint('Hello, World!')\n```"),
@@ -340,6 +354,13 @@ func Test_markdownToRawHTML(t *testing.T) {
 				md: pointerTo("[button url='https://github.com/MathisVerstrepen' text='Github']"),
 			},
 			want:    []string{`<a href="https://github.com/MathisVerstrepen" role="button" class="article-button" target="_blank">Github</a>`},
+			wantErr: false,
+		}, {
+			name: "givenTitleButtonMarkdown_WhenMarkdownToRawHTML_ThenReturnHTML",
+			args: args{
+				md: pointerTo("![This is an image](https://superimage.com)"),
+			},
+			want:    []string{`<figure class="article-image"><img src="https://superimage.com" alt="This is an image"><figcaption>This is an image</figcaption></figure>`},
 			wantErr: false,
 		},
 	}
@@ -430,11 +451,29 @@ func Test_rowType(t *testing.T) {
 			},
 			want: "quote",
 		}, {
+			name: "givenQuoteRow_WhenRowType_ThenReturnQuote",
+			args: args{
+				row: "> [!WARNING] This is a quote.",
+			},
+			want: "quote-warning",
+		}, {
+			name: "givenQuoteRow_WhenRowType_ThenReturnQuote",
+			args: args{
+				row: "> [!IMPORTANT] This is a quote.",
+			},
+			want: "quote-important",
+		}, {
 			name: "givenCodeRow_WhenRowType_ThenReturnCode",
 			args: args{
 				row: "```python",
 			},
 			want: "code",
+		}, {
+			name: "givenQuoteRow_WhenRowType_ThenReturnQuote",
+			args: args{
+				row: "![This is an image](https://superimage.com)",
+			},
+			want: "image",
 		}, {
 			name: "givenButtonRow_WhenRowType_ThenReturnButton",
 			args: args{
@@ -524,6 +563,45 @@ func Test_extractButtonTags(t *testing.T) {
 			}
 			if got2 != tt.want2 {
 				t.Errorf("extractButtonTags() got2 = %v\nWant %v", got2, tt.want2)
+			}
+		})
+	}
+}
+
+func Test_extractImageTags(t *testing.T) {
+	type args struct {
+		row string
+	}
+	tests := []struct {
+		name  string
+		args  args
+		want  string
+		want1 string
+	}{
+		{
+			name: "givenImageRow_WhenExtractImageTags_ThenReturnImageTags",
+			args: args{
+				row: "![This is an image](https://superimage.com)",
+			},
+			want:  "This is an image",
+			want1: "https://superimage.com",
+		}, {
+			name: "givenInvalidImageRow_WhenExtractImageTags_ThenReturnEmptyImageTags",
+			args: args{
+				row: "![This is an image]",
+			},
+			want:  "",
+			want1: "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1 := extractImageTags(tt.args.row)
+			if got != tt.want {
+				t.Errorf("extractImageTags() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("extractImageTags() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}

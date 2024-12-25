@@ -191,6 +191,9 @@ func markdownToRawHTML(md *string) (string, error) {
 		case "button":
 			url, icon, text := extractButtonTags(row)
 			html.WriteString(offlineRender(components.Button(url, icon, text)))
+		case "image":
+			caption, url := extractImageTags(row)
+			html.WriteString(offlineRender(components.Image(url, caption)))
 		case "empty":
 			html.WriteString("\n\n")
 		}
@@ -233,6 +236,9 @@ func rowType(row string) string {
 	if strings.HasPrefix(row, "```") {
 		return "code"
 	}
+	if strings.HasPrefix(row, "![") {
+		return "image"
+	}
 	if strings.HasPrefix(row, "[button") {
 		return "button"
 	}
@@ -270,6 +276,17 @@ func extractButtonTags(row string) (string, string, string) {
 	text := tagMap["text"]
 
 	return url, icon, text
+}
+
+func extractImageTags(row string) (string, string) {
+	re := regexp.MustCompile(`!\[(.*?)\]\((.*?)\)`)
+	matches := re.FindAllStringSubmatch(row, -1)
+
+	if len(matches) == 0 {
+		return "", ""
+	}
+
+	return matches[0][1], matches[0][2]
 }
 
 func boldify(text string) string {
