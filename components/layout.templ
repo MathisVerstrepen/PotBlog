@@ -22,7 +22,7 @@ templ layout(contents templ.Component, title string) {
         <link rel="stylesheet" href="/assets/css/output.css"></link>
         <title>{title}</title>
 
-        <script src="https://unpkg.com/htmx.org@2.0.0/dist/htmx.min.js"></script>
+        <script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js"></script>
 
         if (getEnv("ENV") != "prod") {
             @templ.JSONScript("port", getEnv("PORT"))
