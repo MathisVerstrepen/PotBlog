@@ -9,6 +9,7 @@ import (
 )
 
 type Metadata struct {
+	Name        string
 	Title       string
 	Description string
 	Date        string
@@ -33,6 +34,7 @@ func (db *DB) GetArticle(name string) (Metadata, error) {
 	err = sqlitex.Execute(conn, strings.TrimSpace(query), &sqlitex.ExecOptions{
 		Args: []interface{}{name},
 		ResultFunc: func(stmt *sqlite.Stmt) error {
+			metadata.Name = stmt.ColumnText(0)
 			metadata.Title = stmt.ColumnText(1)
 			metadata.Description = stmt.ColumnText(2)
 			metadata.Date = stmt.ColumnText(3)
@@ -49,7 +51,41 @@ func (db *DB) GetArticle(name string) (Metadata, error) {
 	return metadata, nil
 }
 
-func (db *DB) SaveArticle(metadata Metadata, name string) error {
+func (db *DB) GetArticles() ([]Metadata, error) {
+	var metadata Metadata
+	var articles []Metadata
+	query := `
+		SELECT name, title, description, date, tags, author
+		FROM articles;
+	`
+
+	conn, err := Database.Pool.Take(context.Background())
+	if err != nil {
+		return articles, err
+	}
+	defer Database.Pool.Put(conn)
+
+	err = sqlitex.Execute(conn, strings.TrimSpace(query), &sqlitex.ExecOptions{
+		ResultFunc: func(stmt *sqlite.Stmt) error {
+			metadata.Name = stmt.ColumnText(0)
+			metadata.Title = stmt.ColumnText(1)
+			metadata.Description = stmt.ColumnText(2)
+			metadata.Date = stmt.ColumnText(3)
+			metadata.Tags = strings.Split(stmt.ColumnText(4), ",")
+			metadata.Author = stmt.ColumnText(5)
+			articles = append(articles, metadata)
+			return nil
+		},
+	})
+
+	if err != nil {
+		return articles, err
+	}
+
+	return articles, nil
+}
+
+func (db *DB) SaveArticle(metadata Metadata) error {
 	conn, err := Database.Pool.Take(context.Background())
 	if err != nil {
 		return err
@@ -62,7 +98,7 @@ func (db *DB) SaveArticle(metadata Metadata, name string) error {
 	`
 
 	stmt := conn.Prep(strings.TrimSpace(query))
-	stmt.SetText("$name", name)
+	stmt.SetText("$name", metadata.Name)
 	stmt.SetText("$title", metadata.Title)
 	stmt.SetText("$description", metadata.Description)
 	stmt.SetText("$date", metadata.Date)

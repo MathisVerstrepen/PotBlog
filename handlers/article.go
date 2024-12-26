@@ -29,3 +29,16 @@ func ServeArticle(c echo.Context) error {
 
 	return Render(c, http.StatusOK, comp.Root(comp.Article(metadata, html), article))
 }
+
+func ServeArticles(c echo.Context) error {
+	language := c.Param("language")
+
+	fmt.Println("language:", language)
+
+	articles, err := infrastructure.Database.GetArticles()
+	if err != nil {
+		return Render(c, http.StatusOK, comp.Root(comp.ServerError(), "Server Error"))
+	}
+
+	return Render(c, http.StatusOK, comp.Root(comp.Articles(articles), language))
+}

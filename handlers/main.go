@@ -57,8 +57,8 @@ func generateStaticArticles() error {
 			return err
 		}
 
-		articleName := article[:len(article)-3]
-		err = infrastructure.Database.SaveArticle(articleData.Metadata, articleName)
+		articleData.Metadata.Name = article[:len(article)-3]
+		err = infrastructure.Database.SaveArticle(articleData.Metadata)
 		if err != nil {
 			return err
 		}

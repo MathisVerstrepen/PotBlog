@@ -48,3 +48,39 @@ templ ArticleNotFound() {
         <p class="text-lg text-grey mt-10 text-center">Sorry !<br>The article you are looking for does not exist.</p>
     </div>
 }
+
+templ Articles(articles []infrastructure.Metadata) {
+    <div class="grid grid-cols-2 gap-10">
+        for _, article := range articles {
+            @articleCard(article)
+        }
+    </div>
+}
+
+templ articleCard(metadata infrastructure.Metadata) {
+    <div class="h-60 w-full border-2 border-dark_beige rounded-xl py-5 px-8 shadow-sm flex flex-col">
+        <a href={templ.SafeURL(fmt.Sprintf("/en/article/%s", metadata.Name))}
+            class="font-sans text-grey font-bold text-2xl hover:underline duration-200">
+            {metadata.Title}
+        </a>
+        <time datetime={metadata.Date} class="text-orange font-semibold">{metadata.Date}</time>
+        <p class="text-grey mt-4 h-16">{metadata.Description}</p>
+        @articleCardTags(metadata.Tags)
+    </div>
+}
+
+templ articleCardTags(tags []string) {
+    <div class="flex space-x-4 mt-6 mb-2">
+        for _, tag := range tags {
+            @articleCardTagChip(tag)
+        }
+    </div>
+}
+
+templ articleCardTagChip(tag string) {
+    <a class="text-beige font-bold font-sans py-1 px-4 bg-green rounded-2xl shadow-sm"
+        href={templ.SafeURL(fmt.Sprintf("/tags/%s", tag))}
+    >
+        #{tag}
+    </a>
+}
