@@ -110,6 +110,19 @@
 }
 
 @layer base {
+
+    :root {
+        --c_beige: #ECDFCC;
+        --c_dark_beige: #D1BFA8;
+        --c_orange: #DB7E21;
+        --c_dark_orange: #BE6D1C;
+        --c_red: #A23C3C;
+        --c_green: #697565;
+        --c_dark_green: #4e564b;
+        --c_grey: #3C3D37;
+        --c_black: #181C14;
+    }
+
     @font-face {
         font-family: "Archivo-Variable";
         src: url("/assets/fonts/archivoComplete/Archivo-Variable.woff2")

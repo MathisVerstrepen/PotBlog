@@ -3,6 +3,7 @@ package components
 import (
     "fmt"
     "potblog/infrastructure"
+	"strings"
 )
 
 templ Article(metadata infrastructure.Metadata, html string) {
@@ -49,8 +50,65 @@ templ ArticleNotFound() {
     </div>
 }
 
+func categoriesCount (articles []infrastructure.Metadata) map[string]int {
+    categories := make(map[string]int)
+    for _, article := range articles {
+        for _, category := range article.Tags {
+            categories[strings.ToLower(category)]++
+        }
+    }
+
+    return categories
+}
+
 templ Articles(articles []infrastructure.Metadata) {
-    <div class="grid grid-cols-2 gap-10">
+    <div class="flex space-x-4 items-center mb-8">
+        <div class="mh-12 w-12 text-green">@UseIcon("code", "currentColor", "auto")</div>
+        <h1 class="text-5xl font-bold text-grey font-sans">Dev Articles</h1>
+    </div>
+
+    <form class="flex space-x-4 items-center mb-16"
+        hx-post="/en/articles"
+        hx-target="#articles"
+        hx-trigger="change"
+    >
+        <select name="sort" id="sort" class="text-beige font-bold font-sans h-9 px-5 bg-green rounded-2xl shadow-sm border-2 border-dark_green hover:bg-dark_green duration-200">
+            <option value="date" selected>Date asc</option>
+            <option value="date">Date desc</option>
+            <option value="title">Title asc</option>
+            <option value="title">Title desc</option>
+        </select>
+
+        <style type="text/css">
+            input:checked + label {
+                background-color: var(--c_green);
+                color: var(--c_beige);
+
+                &:hover {
+                    background-color: var(--c_dark_green);
+                }
+
+                &>span {
+                    background-color: var(--c_beige);
+                    color: var(--c_green);
+                }
+            }
+        </style>
+
+        for category, count := range categoriesCount(articles) {
+            <input type="checkbox" name={category} id={category} class="hidden"></input>
+
+            <label for={category} class="text-green font-bold font-sans py-1 px-5 bg-beige rounded-2xl shadow-sm border-2 border-green hover:bg-dark_beige duration-200">
+                #{category} <span class="bg-green text-beige rounded-2xl px-2 ml-2">{fmt.Sprintf("%d", count)}</span>
+            </label>
+        }
+    </form>
+
+    @ArticleGrid(articles)
+}
+
+templ ArticleGrid(articles []infrastructure.Metadata) {
+    <div class="grid grid-cols-2 gap-10" id="articles">
         for _, article := range articles {
             @articleCard(article)
         }
