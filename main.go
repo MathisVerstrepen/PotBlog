@@ -29,6 +29,7 @@ func main() {
 	// ---- Article Routes ---- //
 	e.GET("/:language/article/:article", handlers.ServeArticle)
 	e.GET("/:language/articles", handlers.ServeArticles)
+	e.POST("/:language/articles", handlers.ServeArticlesSortAndFilter)
 
 	// ---- Global Routes ---- //
 	e.GET("/ping", handlers.GlobalPing)

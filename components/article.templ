@@ -71,12 +71,13 @@ templ Articles(articles []infrastructure.Metadata) {
         hx-post="/en/articles"
         hx-target="#articles"
         hx-trigger="change"
+        hx-swap="outerHTML"
     >
         <select name="sort" id="sort" class="text-beige font-bold font-sans h-9 px-5 bg-green rounded-2xl shadow-sm border-2 border-dark_green hover:bg-dark_green duration-200">
-            <option value="date" selected>Date asc</option>
-            <option value="date">Date desc</option>
-            <option value="title">Title asc</option>
-            <option value="title">Title desc</option>
+            <option value="date_desc" selected>Newest</option>
+            <option value="date_asc">Oldest</option>
+            <option value="title_asc">Title A-Z</option>
+            <option value="title_desc">Title Z-A</option>
         </select>
 
         <style type="text/css">

@@ -32,14 +32,21 @@ func Open(path string) error {
 }
 
 func initTables() error {
-	query := `
+	createArticles := `
         CREATE TABLE IF NOT EXISTS articles (
-			name TEXT PRIMARY KEY,
+            name TEXT PRIMARY KEY,
             title TEXT,
-			description TEXT,
-			date TEXT,
-			tags TEXT,
-			author TEXT
+            description TEXT,
+            date TEXT,
+            author TEXT
+        );`
+
+	createTags := `
+        CREATE TABLE IF NOT EXISTS tags (
+            name TEXT,
+            tag TEXT,
+            FOREIGN KEY(name) REFERENCES articles(name),
+            PRIMARY KEY(name, tag)
         );`
 
 	conn, err := Database.Pool.Take(context.Background())
@@ -48,5 +55,9 @@ func initTables() error {
 	}
 	defer Database.Pool.Put(conn)
 
-	return sqlitex.Execute(conn, strings.TrimSpace(query), nil)
+	if err := sqlitex.Execute(conn, strings.TrimSpace(createArticles), nil); err != nil {
+		return err
+	}
+
+	return sqlitex.Execute(conn, strings.TrimSpace(createTags), nil)
 }
