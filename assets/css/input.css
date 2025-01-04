@@ -112,15 +112,15 @@
 @layer base {
 
     :root {
-        --c_beige: #ECDFCC;
-        --c_dark_beige: #D1BFA8;
-        --c_orange: #DB7E21;
-        --c_dark_orange: #BE6D1C;
-        --c_red: #A23C3C;
-        --c_green: #697565;
-        --c_dark_green: #4e564b;
-        --c_grey: #3C3D37;
-        --c_black: #181C14;
+        --c_beige: 236 223 204;
+        --c_dark_beige: 209 191 168;
+        --c_orange: 219 126 33;
+        --c_dark_orange: 190 109 28;
+        --c_red: 162 60 60;
+        --c_green: 105 117 101;
+        --c_dark_green: 78 86 75;
+        --c_grey: 60 61 55;
+        --c_black: 24 28 20;
     }
 
     @font-face {
