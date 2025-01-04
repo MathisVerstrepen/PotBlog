@@ -9,13 +9,13 @@ import (
 	comp "potblog/components"
 )
 
-func HomeHandler(c echo.Context) error {
+func ServeHomePage(c echo.Context) error {
 	language := c.Param("language")
 	fmt.Println("language:", language)
 
 	return Render(c, http.StatusOK, comp.Root(comp.Home(), "Home"))
 }
 
-func LanguageSelector(c echo.Context) error {
+func ServeLanguageSelector(c echo.Context) error {
 	return Render(c, http.StatusOK, comp.LanguageSelectorMenu())
 }

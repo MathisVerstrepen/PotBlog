@@ -11,7 +11,7 @@ const (
 	HTMLArticlesPath     = "assets/articles/html"
 )
 
-func GetArticles() ([]string, error) {
+func RetrieveLocalMdArticles() ([]string, error) {
 	articles := []string{}
 
 	files, err := os.ReadDir(path.Join(Root, MarkdownArticlesPath))
@@ -26,7 +26,7 @@ func GetArticles() ([]string, error) {
 	return articles, nil
 }
 
-func GetArticle(article string) (string, error) {
+func RetriveLocalHtmlArticle(article string) (string, error) {
 	article += ".html"
 	file, err := os.ReadFile(path.Join(Root, HTMLArticlesPath, article))
 	if err != nil {
@@ -36,7 +36,7 @@ func GetArticle(article string) (string, error) {
 	return string(file), nil
 }
 
-func SaveArticle(article string, content string) error {
+func PersistHtmlArticle(article string, content string) error {
 	article = strings.Replace(article, ".md", ".html", 1)
 
 	file, err := os.Create(path.Join(Root, HTMLArticlesPath, article))

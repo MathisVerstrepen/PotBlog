@@ -23,7 +23,7 @@ var (
 	Root       = filepath.Join(filepath.Dir(b), "..")
 )
 
-func offlineRender(t templ.Component) string {
+func renderTemplate(t templ.Component) string {
 	buf := templ.GetBuffer()
 	defer templ.ReleaseBuffer(buf)
 
@@ -55,13 +55,13 @@ type MarkdownHTML struct {
 	Metadata infrastructure.Metadata
 }
 
-func MarkdownToHTML(md *string) (MarkdownHTML, error) {
-	metadata, err := markdownToMetadata(md)
+func ConvertMarkdownToHTML(md *string) (MarkdownHTML, error) {
+	metadata, err := extractMetadataFromMarkdown(md)
 	if err != nil {
 		return MarkdownHTML{}, err
 	}
 
-	html, err := markdownToRawHTML(md)
+	html, err := convertMarkdownToHTML(md)
 	if err != nil {
 		return MarkdownHTML{}, err
 	}
@@ -80,13 +80,13 @@ var MetadataTagMap = map[string]string{
 	"author":      "Author",
 }
 
-func markdownToMetadata(md *string) (infrastructure.Metadata, error) {
-	metadataBlock, err := extractMetadataBlock(*md)
+func extractMetadataFromMarkdown(md *string) (infrastructure.Metadata, error) {
+	metadataSection, err := retrieveMetadataSection(*md)
 	if err != nil {
 		return infrastructure.Metadata{}, err
 	}
 
-	metadataLines := strings.Split(metadataBlock, "\n")
+	metadataLines := strings.Split(metadataSection, "\n")
 
 	metadata := infrastructure.Metadata{}
 	for _, line := range metadataLines {
@@ -95,7 +95,7 @@ func markdownToMetadata(md *string) (infrastructure.Metadata, error) {
 			continue
 		}
 
-		tag, value, err := parseMetadataLine(line)
+		tag, value, err := processMetadataEntry(line)
 		if err != nil {
 			continue
 		}
@@ -109,7 +109,7 @@ func markdownToMetadata(md *string) (infrastructure.Metadata, error) {
 			case "Date":
 				metadata.Date = value
 			case "Tags":
-				metadata.Tags = parseTags(value)
+				metadata.Tags = extractTags(value)
 			case "Author":
 				metadata.Author = value
 			}
@@ -119,7 +119,7 @@ func markdownToMetadata(md *string) (infrastructure.Metadata, error) {
 	return metadata, nil
 }
 
-func extractMetadataBlock(content string) (string, error) {
+func retrieveMetadataSection(content string) (string, error) {
 	if !strings.HasPrefix(content, "---") {
 		return "", fmt.Errorf("invalid metadata format: missing opening separator")
 	}
@@ -132,7 +132,7 @@ func extractMetadataBlock(content string) (string, error) {
 	return content[4 : indexSecondSeparator+2], nil
 }
 
-func parseMetadataLine(line string) (string, string, error) {
+func processMetadataEntry(line string) (string, string, error) {
 	parts := strings.Split(line, ":")
 	if len(parts) < 2 {
 		return "", "", fmt.Errorf("invalid metadata line format")
@@ -143,7 +143,7 @@ func parseMetadataLine(line string) (string, string, error) {
 	return tag, value, nil
 }
 
-func parseTags(value string) []string {
+func extractTags(value string) []string {
 	var tags []string
 	for _, tag := range strings.Split(value, ",") {
 		tags = append(tags, strings.TrimSpace(tag))
@@ -151,8 +151,8 @@ func parseTags(value string) []string {
 	return tags
 }
 
-func markdownToRawHTML(md *string) (string, error) {
-	rows := strings.Split(skipMetadataBlock(md), "\n")
+func convertMarkdownToHTML(md *string) (string, error) {
+	rows := strings.Split(removeMetadataBlock(md), "\n")
 
 	var html strings.Builder
 
@@ -163,17 +163,17 @@ func markdownToRawHTML(md *string) (string, error) {
 
 		switch row_type {
 		case "title_h1":
-			html.WriteString(offlineRender(components.TitleH1(row[2:])))
+			html.WriteString(renderTemplate(components.TitleH1(row[2:])))
 		case "title_h2":
-			html.WriteString(offlineRender(components.TitleH2(row[3:])))
+			html.WriteString(renderTemplate(components.TitleH2(row[3:])))
 		case "paragraph":
-			html.WriteString(offlineRender(components.Paragraph(row)))
+			html.WriteString(renderTemplate(components.Paragraph(row)))
 		case "quote-warning":
-			html.WriteString(offlineRender(components.Blockquote(row[13:], "warning")))
+			html.WriteString(renderTemplate(components.Blockquote(row[13:], "warning")))
 		case "quote-important":
-			html.WriteString(offlineRender(components.Blockquote(row[15:], "important")))
+			html.WriteString(renderTemplate(components.Blockquote(row[15:], "important")))
 		case "quote":
-			html.WriteString(offlineRender(components.Blockquote(row[2:], "standard")))
+			html.WriteString(renderTemplate(components.Blockquote(row[2:], "standard")))
 		case "code":
 			language := strings.Trim(row, "`")
 
@@ -186,14 +186,14 @@ func markdownToRawHTML(md *string) (string, error) {
 				codeBlockMd += codeRow + "\n"
 			}
 
-			codeHash := generateHashFromCodeBlock(codeBlockMd)
-			html.WriteString(offlineRender(components.CodeBlock(language, codeBlockMd, codeHash)))
+			codeHash := hashFromCodeBlock(codeBlockMd)
+			html.WriteString(renderTemplate(components.CodeBlock(language, codeBlockMd, codeHash)))
 		case "button":
-			url, icon, text := extractButtonTags(row)
-			html.WriteString(offlineRender(components.Button(url, icon, text)))
+			url, icon, text := extractButtonProperties(row)
+			html.WriteString(renderTemplate(components.Button(url, icon, text)))
 		case "image":
-			caption, url := extractImageTags(row)
-			html.WriteString(offlineRender(components.Image(url, caption)))
+			caption, url := extractImageDetails(row)
+			html.WriteString(renderTemplate(components.Image(url, caption)))
 		case "empty":
 			html.WriteString("\n\n")
 		}
@@ -208,7 +208,7 @@ func markdownToRawHTML(md *string) (string, error) {
 	return htmlStr, nil
 }
 
-func skipMetadataBlock(content *string) string {
+func removeMetadataBlock(content *string) string {
 	indexSecondSeparator := strings.Index((*content)[3:], "---")
 	if indexSecondSeparator == -1 {
 		return *content
@@ -248,7 +248,7 @@ func rowType(row string) string {
 	return "paragraph"
 }
 
-func generateHashFromCodeBlock(code string) string {
+func hashFromCodeBlock(code string) string {
 	hasher := sha256.New()
 	hasher.Write([]byte(code))
 	hash := hasher.Sum(nil)
@@ -258,7 +258,7 @@ func generateHashFromCodeBlock(code string) string {
 	return encoded[:8]
 }
 
-func extractButtonTags(row string) (string, string, string) {
+func extractButtonProperties(row string) (string, string, string) {
 	innerData := row[7 : len(row)-1]
 
 	tags := strings.Split(innerData, " ")
@@ -278,7 +278,7 @@ func extractButtonTags(row string) (string, string, string) {
 	return url, icon, text
 }
 
-func extractImageTags(row string) (string, string) {
+func extractImageDetails(row string) (string, string) {
 	re := regexp.MustCompile(`!\[(.*?)\]\((.*?)\)`)
 	matches := re.FindAllStringSubmatch(row, -1)
 
@@ -311,7 +311,7 @@ func linkify(text string) string {
 		match := matches[i]
 		linkText := text[match[2]:match[3]]
 		linkURL := text[match[4]:match[5]]
-		replacement := offlineRender(components.ExternalLink(linkURL, linkText))
+		replacement := renderTemplate(components.ExternalLink(linkURL, linkText))
 		text = text[:match[0]] + replacement + text[match[1]:]
 	}
 

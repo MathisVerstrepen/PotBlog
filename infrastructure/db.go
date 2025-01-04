@@ -13,7 +13,7 @@ type DB struct {
 
 var Database *DB
 
-func Open(path string) error {
+func InitializeDatabase(path string) error {
 	dbpool, err := sqlitex.NewPool(path, sqlitex.PoolOptions{
 		PoolSize: 10,
 	})
@@ -23,7 +23,7 @@ func Open(path string) error {
 
 	Database = &DB{Pool: dbpool}
 
-	err = initTables()
+	err = createDatabaseSchema()
 	if err != nil {
 		return err
 	}
@@ -31,7 +31,7 @@ func Open(path string) error {
 	return nil
 }
 
-func initTables() error {
+func createDatabaseSchema() error {
 	createArticles := `
         CREATE TABLE IF NOT EXISTS articles (
             name TEXT PRIMARY KEY,

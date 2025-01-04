@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	comp "potblog/components"
-	"potblog/infrastructure"
+	infra "potblog/infrastructure"
 	"potblog/services"
 )
 
@@ -18,24 +18,24 @@ func ServeArticle(c echo.Context) error {
 
 	fmt.Println("language:", language)
 
-	html, err := services.GetArticle(article)
+	articleHtmlContent, err := services.RetriveLocalHtmlArticle(article)
 	if err != nil {
 		return Render(c, http.StatusOK, comp.Root(comp.ArticleNotFound(), fmt.Sprintf("%s - Not found", article)))
 	}
 
-	metadata, err := infrastructure.Database.GetArticle(article)
+	articleMetadata, err := infra.Database.GetArticle(article)
 	if err != nil {
 		return Render(c, http.StatusOK, comp.Root(comp.ArticleNotFound(), fmt.Sprintf("%s - Not found", article)))
 	}
 
-	return Render(c, http.StatusOK, comp.Root(comp.Article(metadata, html), article))
+	return Render(c, http.StatusOK, comp.Root(comp.Article(articleMetadata, articleHtmlContent), article))
 }
 
 func ServeArticles(c echo.Context) error {
 	language := c.Param("language")
 	fmt.Println("language:", language)
 
-	articles, err := infrastructure.Database.GetArticles(infrastructure.SortAndFilter{}.Default())
+	articles, err := infra.Database.GetArticles(infra.ArticleSortingCriteria{}.Default())
 	if err != nil {
 		return Render(c, http.StatusOK, comp.Root(comp.ServerError(), "Server Error"))
 	}
@@ -43,31 +43,31 @@ func ServeArticles(c echo.Context) error {
 	return Render(c, http.StatusOK, comp.Root(comp.Articles(articles), language))
 }
 
-func formDataMapper(formData url.Values) infrastructure.SortAndFilter {
-	var sortAndFilter infrastructure.SortAndFilter
+func mapFormDataToSortingCriteria(formData url.Values) infra.ArticleSortingCriteria {
+	var sortingCriteria infra.ArticleSortingCriteria
 	for key, value := range formData {
 		if key == "sort" {
-			sortAndFilter.SortBy = value[0]
+			sortingCriteria.SortBy = value[0]
 		} else {
-			sortAndFilter.FilterBy = append(sortAndFilter.FilterBy, key)
+			sortingCriteria.FilterBy = append(sortingCriteria.FilterBy, key)
 		}
 	}
 
-	return sortAndFilter
+	return sortingCriteria
 }
 
-func ServeArticlesSortAndFilter(c echo.Context) error {
+func ServeSortedArticles(c echo.Context) error {
 	language := c.Param("language")
 	fmt.Println("language:", language)
 
-	formData, err := c.FormParams()
+	formParams, err := c.FormParams()
 	if err != nil {
 		return Render(c, http.StatusOK, comp.Root(comp.ServerError(), "Server Error"))
 	}
 
-	sortAndFilter := formDataMapper(formData)
+	sortingCriteria := mapFormDataToSortingCriteria(formParams)
 
-	articles, err := infrastructure.Database.GetArticles(sortAndFilter)
+	articles, err := infra.Database.GetArticles(sortingCriteria)
 	if err != nil {
 		return Render(c, http.StatusOK, comp.Root(comp.ServerError(), "Server Error"))
 	}

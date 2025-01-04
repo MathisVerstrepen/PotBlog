@@ -21,7 +21,7 @@ func Init() {
 		log.Println("WARNING : Failed to load .env file")
 	}
 
-	err = infrastructure.Open("potblog.db")
+	err = infrastructure.InitializeDatabase("potblog.db")
 	if err != nil {
 		log.Fatalf("Failed to open database: %s", err)
 	}
@@ -38,7 +38,7 @@ func generateStaticArticles() error {
 	fmt.Println("Generating static articles...")
 	st := time.Now()
 
-	articles, err := services.GetArticles()
+	articles, err := services.RetrieveLocalMdArticles()
 
 	if err != nil {
 		return err
@@ -47,12 +47,12 @@ func generateStaticArticles() error {
 	for _, article := range articles {
 		fmt.Printf("> Generating article %s\n", article)
 		md := services.ReadMarkdownFile(fmt.Sprintf("assets/articles/markdown/%s", article))
-		articleData, err := services.MarkdownToHTML(&md)
+		articleData, err := services.ConvertMarkdownToHTML(&md)
 		if err != nil {
 			return err
 		}
 
-		err = services.SaveArticle(article, articleData.RawHTML)
+		err = services.PersistHtmlArticle(article, articleData.RawHTML)
 		if err != nil {
 			return err
 		}

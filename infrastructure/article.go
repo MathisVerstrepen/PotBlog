@@ -54,21 +54,21 @@ func (db *DB) GetArticle(name string) (Metadata, error) {
 	return metadata, nil
 }
 
-type SortAndFilter struct {
+type ArticleSortingCriteria struct {
 	SortBy   string
 	FilterBy []string
 }
 
-func (sf SortAndFilter) Default() SortAndFilter {
+func (sf ArticleSortingCriteria) Default() ArticleSortingCriteria {
 	sf.SortBy = "date_desc"
 	return sf
 }
 
-func (sf SortAndFilter) HasFilter() bool {
+func (sf ArticleSortingCriteria) HasFilter() bool {
 	return len(sf.FilterBy) > 0
 }
 
-func (sf SortAndFilter) OrderClause() (string, string) {
+func (sf ArticleSortingCriteria) OrderClause() (string, string) {
 	switch sf.SortBy {
 	case "date_asc":
 		return "date", "ASC"
@@ -83,7 +83,7 @@ func (sf SortAndFilter) OrderClause() (string, string) {
 	}
 }
 
-func (sf SortAndFilter) FilterClause(dbTags []string) string {
+func (sf ArticleSortingCriteria) FilterClause(dbTags []string) string {
 	var validTags []string
 	for _, tag := range sf.FilterBy {
 		if !slices.Contains(dbTags, tag) {
@@ -100,7 +100,7 @@ func (sf SortAndFilter) FilterClause(dbTags []string) string {
 	return fmt.Sprintf("tag IN (%s)", strings.Join(validTags, ","))
 }
 
-func (db *DB) GetArticles(sorter SortAndFilter) ([]Metadata, error) {
+func (db *DB) GetArticles(sorter ArticleSortingCriteria) ([]Metadata, error) {
 	var metadata Metadata
 	var articles []Metadata
 	var filterClause string

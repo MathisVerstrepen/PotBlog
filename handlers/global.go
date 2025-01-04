@@ -5,11 +5,11 @@ import (
 	"golang.org/x/net/websocket"
 )
 
-func GlobalPing(c echo.Context) error {
+func ServePing(c echo.Context) error {
 	return c.String(200, "pong")
 }
 
-func GlobalHotReloadWS(c echo.Context) error {
+func InitHotReloadWebSocket(c echo.Context) error {
 	websocket.Handler(func(ws *websocket.Conn) {
 		defer ws.Close()
 		for {

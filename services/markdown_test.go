@@ -93,7 +93,7 @@ func TestMarkdownToHTML(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := MarkdownToHTML(tt.args.md)
+			got, err := ConvertMarkdownToHTML(tt.args.md)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("MarkdownToHTML() error = %v \nWantErr %v", err, tt.wantErr)
 				return
@@ -152,7 +152,7 @@ author: Mathis Verstrepen
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := markdownToMetadata(tt.args.md)
+			got, err := extractMetadataFromMarkdown(tt.args.md)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("markdownToMetadata() error = %v\nWantErr %v", err, tt.wantErr)
 				return
@@ -205,7 +205,7 @@ title: This is an article !
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := extractMetadataBlock(tt.args.content)
+			got, err := retrieveMetadataSection(tt.args.content)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("extractMetadataBlock() error = %v\nWantErr %v", err, tt.wantErr)
 				return
@@ -248,7 +248,7 @@ func Test_parseMetadataLine(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1, err := parseMetadataLine(tt.args.line)
+			got, got1, err := processMetadataEntry(tt.args.line)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("parseMetadataLine() error = %v\nWantErr %v", err, tt.wantErr)
 				return
@@ -282,7 +282,7 @@ func Test_parseTags(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := parseTags(tt.args.value); !reflect.DeepEqual(got, tt.want) {
+			if got := extractTags(tt.args.value); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("parseTags() = %v\nWant %v", got, tt.want)
 			}
 		})
@@ -366,7 +366,7 @@ func Test_markdownToRawHTML(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := markdownToRawHTML(tt.args.md)
+			got, err := convertMarkdownToHTML(tt.args.md)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("markdownToRawHTML() error = %v\nWantErr %v", err, tt.wantErr)
 				return
@@ -410,7 +410,7 @@ description: desc.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := skipMetadataBlock(tt.args.content); got != tt.want {
+			if got := removeMetadataBlock(tt.args.content); got != tt.want {
 				t.Errorf("skipMetadataBlock() = %v \nWant %v", got, tt.want)
 			}
 		})
@@ -516,7 +516,7 @@ func Test_generateHashFromCodeBlock(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := generateHashFromCodeBlock(tt.args.code); got != tt.want {
+			if got := hashFromCodeBlock(tt.args.code); got != tt.want {
 				t.Errorf("generateHashFromCodeBlock() = %v, want %v", got, tt.want)
 			}
 		})
@@ -554,7 +554,7 @@ func Test_extractButtonTags(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1, got2 := extractButtonTags(tt.args.row)
+			got, got1, got2 := extractButtonProperties(tt.args.row)
 			if got != tt.want {
 				t.Errorf("extractButtonTags() got = %v\nWant %v", got, tt.want)
 			}
@@ -596,7 +596,7 @@ func Test_extractImageTags(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1 := extractImageTags(tt.args.row)
+			got, got1 := extractImageDetails(tt.args.row)
 			if got != tt.want {
 				t.Errorf("extractImageTags() got = %v, want %v", got, tt.want)
 			}
