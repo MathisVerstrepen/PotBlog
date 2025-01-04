@@ -3,10 +3,11 @@ module potblog
 go 1.23.0
 
 require (
-	github.com/a-h/templ v0.2.793
+	github.com/a-h/templ v0.3.819
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.13.3
 	golang.org/x/net v0.33.0
+	zombiezen.com/go/sqlite v1.4.0
 )
 
 require (
@@ -27,5 +28,4 @@ require (
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.8.0 // indirect
 	modernc.org/sqlite v1.33.1 // indirect
-	zombiezen.com/go/sqlite v1.4.0 // indirect
 )
