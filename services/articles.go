@@ -7,14 +7,21 @@ import (
 )
 
 const (
-	MarkdownArticlesPath = "assets/articles/markdown"
-	HTMLArticlesPath     = "assets/articles/html"
+	MarkdownArticlesPathBase = "assets/articles/markdown"
+	HTMLArticlesPath         = "assets/articles/html"
 )
+
+func MarkdownArticlesPath() string {
+	if strings.Compare(os.Getenv("ENV"), "dev") == 0 {
+		return path.Join(Root, MarkdownArticlesPathBase, "dev")
+	}
+	return path.Join(Root, MarkdownArticlesPathBase, "prod")
+}
 
 func RetrieveLocalMdArticles() ([]string, error) {
 	articles := []string{}
 
-	files, err := os.ReadDir(path.Join(Root, MarkdownArticlesPath))
+	files, err := os.ReadDir(MarkdownArticlesPath())
 	if err != nil {
 		return articles, err
 	}

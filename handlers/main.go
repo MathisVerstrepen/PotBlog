@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"log"
+	"path"
 	"time"
 
 	"github.com/a-h/templ"
@@ -46,7 +47,8 @@ func generateStaticArticles() error {
 
 	for _, article := range articles {
 		fmt.Printf("> Generating article %s\n", article)
-		md := services.ReadMarkdownFile(fmt.Sprintf("assets/articles/markdown/%s", article))
+		articlePath := path.Join(services.MarkdownArticlesPath(), article)
+		md := services.ReadMarkdownFile(articlePath)
 		articleData, err := services.ConvertMarkdownToHTML(&md)
 		if err != nil {
 			return err
