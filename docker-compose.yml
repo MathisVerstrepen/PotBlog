@@ -11,3 +11,8 @@ services:
       - ENV=prod
       - PORT=8080
     restart: unless-stopped
+    volumes:
+      - potblog_db:/app/potblog.db
+
+volumes:
+  potblog_db:

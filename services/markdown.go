@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"runtime"
 	"strings"
 
 	"github.com/a-h/templ"
@@ -19,8 +18,7 @@ import (
 )
 
 var (
-	_, b, _, _ = runtime.Caller(0)
-	Root       = filepath.Join(filepath.Dir(b), "..")
+	Root = os.Getenv("ROOT_DIR")
 )
 
 func renderTemplate(t templ.Component) string {

@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.22-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 # Install build dependencies
 RUN apk add --no-cache git make
@@ -27,7 +27,8 @@ FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates
 
-WORKDIR /root/
+WORKDIR /root
+ENV ROOT_DIR /root
 
 # Copy the pre-built binary file from the previous stage
 COPY --from=builder /app/main .
