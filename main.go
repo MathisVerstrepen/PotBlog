@@ -12,7 +12,9 @@ import (
 
 func main() {
 	e := echo.New()
-	e.Use(middleware.Logger())
+	if os.Getenv("ENV") == "dev" {
+		e.Use(middleware.Logger())
+	}
 	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		Level: 5,
 	}))
