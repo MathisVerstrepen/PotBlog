@@ -10,8 +10,8 @@
         },
 
         "docker": {
-            "imageName": "PotBlog",
-            "imageTag": "1.0.0",
+            "imageName": "potblog",
+            "imageTag": "latest",
             "dockerfileLocation": "potblog.Dockerfile",
             "buildArgs": [],
             "composeFile": "docker-compose.yml",
