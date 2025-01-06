@@ -2,7 +2,7 @@
 FROM golang:1.23-alpine AS builder
 
 # Install build dependencies
-RUN apk add --no-cache git make
+RUN apk add --no-cache git make nodejs npm
 
 # Install templ
 RUN go install github.com/a-h/templ/cmd/templ@latest
@@ -13,6 +13,12 @@ WORKDIR /app
 # Copy go mod and sum files
 COPY go.mod ./
 COPY . .
+
+# Install tailwindcss
+RUN npm install -D tailwindcss
+
+# Generate CSS
+RUN npx tailwindcss -i ./assets/css/input.css -o ./assets/css/output.css --minify
 
 RUN templ generate
 
