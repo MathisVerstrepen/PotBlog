@@ -4,7 +4,7 @@ services:
   web:
     image: registry.diikstra.fr/potblog:latest
     ports:
-      - "8080:8080"
+      - "10080:8080"
     environment:
       - ENV=prod
       - PORT=8080
