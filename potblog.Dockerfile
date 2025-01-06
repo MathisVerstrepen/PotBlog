@@ -11,7 +11,7 @@ RUN go install github.com/a-h/templ/cmd/templ@latest
 WORKDIR /app
 
 # Copy go mod and sum files
-COPY go.mod go.sum ./
+COPY go.mod ./
 COPY . .
 
 RUN templ generate
