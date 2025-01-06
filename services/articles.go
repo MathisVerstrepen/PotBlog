@@ -12,10 +12,11 @@ const (
 )
 
 func MarkdownArticlesPath() string {
+	root := os.Getenv("ROOT_DIR")
 	if strings.Compare(os.Getenv("ENV"), "dev") == 0 {
-		return path.Join(Root, MarkdownArticlesPathBase, "dev")
+		return path.Join(root, MarkdownArticlesPathBase, "dev")
 	}
-	return path.Join(Root, MarkdownArticlesPathBase, "prod")
+	return path.Join(root, MarkdownArticlesPathBase, "prod")
 }
 
 func RetrieveLocalMdArticles() ([]string, error) {
@@ -35,7 +36,7 @@ func RetrieveLocalMdArticles() ([]string, error) {
 
 func RetriveLocalHtmlArticle(article string) (string, error) {
 	article += ".html"
-	file, err := os.ReadFile(path.Join(Root, HTMLArticlesPath, article))
+	file, err := os.ReadFile(path.Join(os.Getenv("ROOT_DIR"), HTMLArticlesPath, article))
 	if err != nil {
 		return "", err
 	}
@@ -46,7 +47,7 @@ func RetriveLocalHtmlArticle(article string) (string, error) {
 func PersistHtmlArticle(article string, content string) error {
 	article = strings.Replace(article, ".md", ".html", 1)
 
-	file, err := os.Create(path.Join(Root, HTMLArticlesPath, article))
+	file, err := os.Create(path.Join(os.Getenv("ROOT_DIR"), HTMLArticlesPath, article))
 	if err != nil {
 		return err
 	}

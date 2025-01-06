@@ -3,11 +3,18 @@ package services
 import (
 	"io"
 	"os"
+	"path"
 	"path/filepath"
 	"potblog/infrastructure"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
+)
+
+var (
+	_, b, _, _ = runtime.Caller(0)
+	Root       = filepath.Join(filepath.Dir(b), "..")
 )
 
 func pointerTo[T ~string](s T) *T {
@@ -56,7 +63,7 @@ func Test_ReadMarkdownFile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := ReadMarkdownFile(tt.args.filename); got != tt.want {
+			if got := ReadMarkdownFile(path.Join(Root, tt.args.filename)); got != tt.want {
 				t.Errorf("ReadMarkdownFile() = %v\nWant %v", got, tt.want)
 			}
 		})
@@ -92,6 +99,7 @@ func TestMarkdownToHTML(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
+		os.Setenv("ROOT_DIR", Root)
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := ConvertMarkdownToHTML(tt.args.md)
 			if (err != nil) != tt.wantErr {

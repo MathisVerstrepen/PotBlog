@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -15,10 +14,6 @@ import (
 
 	"potblog/components"
 	"potblog/infrastructure"
-)
-
-var (
-	Root = os.Getenv("ROOT_DIR")
 )
 
 func renderTemplate(t templ.Component) string {
@@ -32,8 +27,7 @@ func renderTemplate(t templ.Component) string {
 	return buf.String()
 }
 
-func ReadMarkdownFile(relative_filepath string) string {
-	filepath := filepath.Join(Root, relative_filepath)
+func ReadMarkdownFile(filepath string) string {
 	file, err := os.Open(filepath)
 	if err != nil {
 		return ""
