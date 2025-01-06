@@ -12,7 +12,7 @@
         "docker": {
             "imageName": "PotBlog",
             "imageTag": "1.0.0",
-            "dockerfileLocation": "Dockerfile",
+            "dockerfileLocation": "potblog.Dockerfile",
             "buildArgs": [],
             "composeFile": "docker-compose.yml",
             "envFile": "potblog.env",
