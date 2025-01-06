@@ -19,7 +19,7 @@ func main() {
 	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		Level: 5,
 	}))
-	e.Static(path.Join("ROOT_DIR", "assets"), "assets")
+	e.Static("/assets", path.Join(os.Getenv("ROOT_DIR"), "assets"))
 
 	handlers.Init()
 
