@@ -1,0 +1,27 @@
+{
+    "_meta": {
+        "deployService": "ApolloLaunch",
+        "deployServiceVersion": "1.0.0"
+    },
+    "config": {
+        "repository": {
+            "owner": "Mathis Verstrepen",
+            "name": "PotBlog"
+        },
+
+        "docker": {
+            "imageName": "PotBlog",
+            "imageTag": "1.0.0",
+            "dockerfileLocation": "Dockerfile",
+            "buildArgs": [],
+            "composeFile": "docker-compose.yml",
+            "envFile": "potblog.env",
+            "envDeployType": "file",
+            "host": "hogwarts-3"
+        },
+
+        "deploy": {
+            "strategy": "all-at-once"
+        }
+    }
+}
