@@ -28,7 +28,9 @@ func RetrieveLocalMdArticles() ([]string, error) {
 	}
 
 	for _, file := range files {
-		articles = append(articles, file.Name())
+		if strings.Contains(file.Name(), ".md") {
+			articles = append(articles, file.Name())
+		}
 	}
 
 	return articles, nil
